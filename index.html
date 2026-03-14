@@ -430,15 +430,17 @@ function renderActivity(activity) {
   }
   console.log('ACTIVITY SAMPLE:', JSON.stringify(activity[0]));
   list.innerHTML = '<div class="card">' + activity.slice(0,30).map(a => {
-    const isBuy = (a.side || '').toLowerCase() === 'buy';
-    const amount = parseFloat(a.usdcSize) || parseFloat(a.size) || 0;
+    const isBuy = (a.side || '').toUpperCase() === 'BUY';
+    const amount = parseFloat(a.usdcSize) || 0;
     const price = parseFloat(a.price) || 0;
-    const title = a.title || a.market || 'N/A';
+    const title = a.title || a.name || 'N/A';
     const outcome = a.outcome || 'Yes';
+    const slug = a.eventSlug || a.slug || '';
+    const url = slug ? `https://polymarket.com/event/${slug}` : 'https://polymarket.com';
     const ts = a.timestamp ? new Date(a.timestamp * 1000).toLocaleDateString('ru', {
       day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
     }) : '—';
-    return `<div class="activity-item">
+    return `<div class="activity-item" onclick="openLink('${url}')" style="cursor:pointer">
       <div class="act-dot" style="background:${isBuy?'var(--green)':'var(--red)'}"></div>
       <div class="act-info">
         <div class="act-q">${title.slice(0,60)}</div>
