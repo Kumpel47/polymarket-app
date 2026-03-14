@@ -242,12 +242,15 @@ let positionsCache = [];
 // ── LOGIN ──
 function doLogin() {
   const val = document.getElementById('wallet-input').value.trim();
+  alert('Адрес: ' + val + ' | Длина: ' + val.length);
   if (!val.startsWith('0x') || val.length !== 42) {
+    alert('Не прошёл проверку');
     shake(document.getElementById('wallet-input'));
     return;
   }
   walletAddress = val.toLowerCase();
   localStorage.setItem(STORAGE_KEY, walletAddress);
+  alert('Входим...');
   showApp();
 }
 
