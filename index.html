@@ -288,17 +288,43 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ── POLYMARKET API ──
 async function fetchPositions(address) {
-  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=${encodeURIComponent(`https://data-api.polymarket.com/positions?user_address=${address}&sizeThreshold=0&limit=100`)}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('positions API error');
-  return await r.json();
+  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
+  const endpoints = [
+    proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user_address=${address}&sizeThreshold=0&limit=100`),
+    proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user=${address}&limit=100`),
+    proxy + encodeURIComponent(`https://gamma-api.polymarket.com/positions?user_address=${address}&limit=100`),
+  ];
+  for (const url of endpoints) {
+    try {
+      const r = await fetch(url);
+      const text = await r.text();
+      if (!text || text.trim() === '') continue;
+      const data = JSON.parse(text);
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.data)) return data.data;
+    } catch(e) { continue; }
+  }
+  return [];
 }
 
 async function fetchActivity(address) {
-  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=${encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address}&limit=50`)}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('activity API error');
-  return await r.json();
+  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
+  const endpoints = [
+    proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address}&limit=50`),
+    proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user_address=${address}&limit=50`),
+    proxy + encodeURIComponent(`https://data-api.polymarket.com/trade-history?user=${address}&limit=50`),
+  ];
+  for (const url of endpoints) {
+    try {
+      const r = await fetch(url);
+      const text = await r.text();
+      if (!text || text.trim() === '') continue;
+      const data = JSON.parse(text);
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.data)) return data.data;
+    } catch(e) { continue; }
+  }
+  return [];
 }
 
 async function fetchMarkets() {
@@ -348,6 +374,10 @@ function renderDashboard(positions, activity) {
   document.getElementById('h-losses').textContent = losses.length;
 
   const container = document.getElementById('h-positions');
+  if (!open.length && !positions.length) {
+    container.innerHTML = '<div class="empty">Позиций не найдено.<br>Возможно API Polymarket временно недоступен<br>или на этом кошельке нет истории.</div>';
+    return;
+  }
   if (!open.length) {
     container.innerHTML = '<div class="empty">Нет открытых позиций</div>';
     return;
