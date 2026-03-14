@@ -242,7 +242,7 @@ let positionsCache = [];
 // ── LOGIN ──
 function doLogin() {
   const val = document.getElementById('wallet-input').value.trim();
-  if (!val.match(/^0x[0-9a-fA-F]{40}$/)) {
+  if (!val.startsWith('0x') || val.length !== 42) {
     shake(document.getElementById('wallet-input'));
     return;
   }
