@@ -6,82 +6,51 @@
 <title>Polymarket Dashboard</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root {
-  --bg:     var(--tg-theme-bg-color, #111);
-  --bg2:    var(--tg-theme-secondary-bg-color, #1e1e1e);
-  --text:   var(--tg-theme-text-color, #fff);
-  --hint:   var(--tg-theme-hint-color, #888);
-  --accent: var(--tg-theme-button-color, #3390ec);
-  --atxt:   var(--tg-theme-button-text-color, #fff);
-  --green:  #30d158;
-  --red:    #ff453a;
-  --amber:  #ffd60a;
-  --r: 14px;
-}
+:root{--bg:var(--tg-theme-bg-color,#111);--bg2:var(--tg-theme-secondary-bg-color,#1e1e1e);--text:var(--tg-theme-text-color,#fff);--hint:var(--tg-theme-hint-color,#888);--accent:var(--tg-theme-button-color,#3390ec);--atxt:var(--tg-theme-button-text-color,#fff);--green:#30d158;--red:#ff453a;--amber:#ffd60a;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:72px;overscroll-behavior:none}
-
-/* ── LOGIN ── */
 #login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:24px;text-align:center}
 .login-icon{font-size:56px;margin-bottom:20px}
 .login-title{font-size:22px;font-weight:700;margin-bottom:8px}
 .login-sub{font-size:14px;color:var(--hint);margin-bottom:32px;line-height:1.5}
-.wallet-input{width:100%;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--text);font-size:13px;padding:14px;outline:none;font-family:monospace;margin-bottom:12px;word-break:break-all}
+.wallet-input{width:100%;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--text);font-size:13px;padding:14px;outline:none;font-family:monospace;margin-bottom:8px}
 .wallet-input:focus{border-color:var(--accent)}
-.btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:var(--atxt);font-size:16px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:var(--atxt);font-size:16px;font-weight:600;cursor:pointer}
 .btn:active{opacity:.8}
 .btn.secondary{background:rgba(255,255,255,.06);color:var(--text);margin-top:8px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
 .login-hint{font-size:12px;color:var(--hint);margin-top:16px;line-height:1.5}
-
-/* ── NAV ── */
 .nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:0.5px solid rgba(255,255,255,.08);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;cursor:pointer;color:var(--hint);font-size:10px;font-weight:500;transition:color .15s;border:none;background:none}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;cursor:pointer;color:var(--hint);font-size:10px;font-weight:500;border:none;background:none}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-
-/* ── SCREENS ── */
 .screen{display:none;padding:16px;animation:fadeIn .15s ease}
 .screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── CARDS ── */
 .card{background:var(--bg2);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .label{font-size:12px;color:var(--hint);margin-bottom:4px}
 .big{font-size:32px;font-weight:700;letter-spacing:-1px}
 .section-title{font-size:13px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:4px}
 .hint{color:var(--hint);font-size:13px}
-.green{color:var(--green)}
-.red{color:var(--red)}
-.amber{color:var(--amber)}
-
-/* ── STAT GRID ── */
+.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .stat-card{background:var(--bg2);border-radius:var(--r);padding:14px}
 .stat-val{font-size:22px;font-weight:700;margin-top:4px}
-
-/* ── POSITIONS ── */
-.pos-card{background:var(--bg2);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.pos-card{background:var(--bg2);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer}
 .pos-question{font-size:14px;font-weight:500;line-height:1.4;margin-bottom:10px}
 .pos-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:4px}
 .pos-row .lbl{color:var(--hint)}
 .pos-bar-track{height:6px;border-radius:3px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}
-.pos-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.pos-bar-fill{height:100%;border-radius:3px}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;margin-bottom:8px}
 .badge-win{background:rgba(48,209,88,.15);color:var(--green)}
 .badge-loss{background:rgba(255,69,58,.15);color:var(--red)}
-.badge-open{background:rgba(51,144,236,.15);color:var(--accent)}
-
-/* ── ACTIVITY ── */
-.activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,.06);align-items:flex-start}
+.activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,.06);align-items:flex-start;cursor:pointer}
 .activity-item:last-child{border-bottom:none}
 .act-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
 .act-info{flex:1;min-width:0}
 .act-q{font-size:13px;font-weight:500;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .act-meta{font-size:12px;color:var(--hint);margin-top:2px}
 .act-amt{font-size:14px;font-weight:700;flex-shrink:0}
-
-/* ── KELLY ── */
 .slider-row{margin-bottom:16px}
 .slider-row label{display:flex;justify-content:space-between;font-size:13px;color:var(--hint);margin-bottom:8px}
 .slider-row label span{color:var(--text);font-weight:600}
@@ -90,46 +59,40 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
 .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .result-card{background:var(--bg2);border-radius:var(--r);padding:14px;text-align:center}
 .result-card .rv{font-size:20px;font-weight:700;margin-top:4px}
-
-/* ── MARKETS ── */
-.mkt-card{background:var(--bg2);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:opacity .15s}
-.mkt-card:active{opacity:.7}
+.mkt-card{background:var(--bg2);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer}
 .mkt-tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;margin-bottom:8px}
 .tag-up{background:rgba(48,209,88,.15);color:var(--green)}
 .tag-dn{background:rgba(255,69,58,.15);color:var(--red)}
 .tag-mid{background:rgba(255,214,10,.12);color:var(--amber)}
 .mkt-q{font-size:14px;font-weight:500;line-height:1.4;margin-bottom:8px}
 .mkt-meta{display:flex;gap:12px;font-size:12px;color:var(--hint)}
-
-/* ── UTILS ── */
+.alert-card{background:var(--bg2);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.alert-text{font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap}
+.alert-date{font-size:11px;color:var(--hint);margin-top:8px}
 .spinner{text-align:center;padding:30px;color:var(--hint);font-size:14px}
 .empty{text-align:center;padding:32px 20px;color:var(--hint);font-size:14px;line-height:1.6}
 .wallet-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;margin-bottom:16px;cursor:pointer}
 .wallet-addr{font-family:monospace;font-size:12px;color:var(--hint);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.refresh-btn{background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;padding:0;font-weight:500}
-input[type=number],input[type=text]{width:100%;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-size:16px;padding:12px 14px;margin-bottom:12px;outline:none}
-input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
+.refresh-btn{background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-weight:500}
+.debug{color:var(--red);font-size:12px;margin-bottom:8px;word-break:break-all;min-height:16px}
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN ── -->
 <div id="login-screen">
   <div class="login-icon">📊</div>
   <div class="login-title">Polymarket Dashboard</div>
-  <div class="login-sub">Введи адрес своего кошелька (0x...)<br>чтобы увидеть позиции и P&L в реальном времени</div>
-  <input class="wallet-input" id="wallet-input" placeholder="0x742d35Cc6634C0532925a3b8D4C9..." autocomplete="off" spellcheck="false">
-  <div id="debug" style="color:#ff453a;font-size:12px;margin-bottom:8px;word-break:break-all"></div>
-  <button class="btn" id="login-btn" onclick="doLogin()">Войти</button>
-  <div class="login-hint">Read-only доступ. Приватный ключ не нужен.<br>Данные берутся напрямую с Polymarket.</div>
+  <div class="login-sub">Введи адрес кошелька (0x...)<br>чтобы увидеть позиции и P&L</div>
+  <input class="wallet-input" id="wallet-input" placeholder="0x3a597F87..." autocomplete="off" spellcheck="false">
+  <div class="debug" id="debug-msg"></div>
+  <button class="btn" id="login-btn">Войти</button>
+  <div class="login-hint">Read-only. Приватный ключ не нужен.</div>
 </div>
 
-<!-- ── APP ── -->
 <div id="app" style="display:none">
 
-  <!-- DASHBOARD -->
   <div class="screen active" id="s-home">
-    <div class="wallet-badge" onclick="switchWallet()">
+    <div class="wallet-badge" id="wallet-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
       <span class="wallet-addr" id="wallet-display">—</span>
       <span style="font-size:11px;color:var(--hint)">сменить</span>
@@ -143,22 +106,10 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
       </div>
     </div>
     <div class="stat-grid">
-      <div class="stat-card">
-        <div class="label">Открытых</div>
-        <div class="stat-val" style="color:var(--accent)" id="h-open">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Завершённых</div>
-        <div class="stat-val" id="h-closed">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Выигрышей</div>
-        <div class="stat-val green" id="h-wins">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Проигрышей</div>
-        <div class="stat-val red" id="h-losses">—</div>
-      </div>
+      <div class="stat-card"><div class="label">Открытых</div><div class="stat-val" style="color:var(--accent)" id="h-open">—</div></div>
+      <div class="stat-card"><div class="label">Завершённых</div><div class="stat-val" id="h-closed">—</div></div>
+      <div class="stat-card"><div class="label">Выигрышей</div><div class="stat-val green" id="h-wins">—</div></div>
+      <div class="stat-card"><div class="label">Проигрышей</div><div class="stat-val red" id="h-losses">—</div></div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="section-title" style="margin:0">Открытые позиции</div>
@@ -167,13 +118,11 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
     <div id="h-positions"><div class="spinner">Загружаю...</div></div>
   </div>
 
-  <!-- ACTIVITY -->
   <div class="screen" id="s-activity">
     <div class="section-title">История сделок</div>
     <div id="activity-list"><div class="spinner">Загружаю...</div></div>
   </div>
 
-  <!-- KELLY -->
   <div class="screen" id="s-kelly">
     <div class="section-title">Kelly Calculator</div>
     <div class="card">
@@ -182,7 +131,7 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
         <input type="range" id="k-bankroll" min="10" max="500" value="60" step="1">
       </div>
       <div class="slider-row">
-        <label>Твоя оценка вероятности <span id="k-mpv">60%</span></label>
+        <label>Твоя оценка <span id="k-mpv">60%</span></label>
         <input type="range" id="k-myprob" min="1" max="99" value="60" step="1">
       </div>
       <div class="slider-row" style="margin-bottom:0">
@@ -191,7 +140,7 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
       </div>
     </div>
     <div id="k-warn" style="display:none;background:rgba(255,214,10,.1);color:var(--amber);border-radius:var(--r);padding:12px 14px;font-size:13px;margin-bottom:12px">
-      Нет математического преимущества — Kelly говорит не ставить.
+      Нет преимущества — Kelly говорит не ставить.
     </div>
     <div class="result-grid">
       <div class="result-card"><div class="label">Kelly %</div><div class="rv green" id="k-pct">—</div></div>
@@ -202,14 +151,15 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
     <div style="margin-top:12px;font-size:12px;color:var(--hint);text-align:center" id="k-edge"></div>
   </div>
 
-  <!-- ALERTS -->
   <div class="screen" id="s-alerts">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="section-title" style="margin:0">Алерты</div>
       <button class="refresh-btn" onclick="loadAlerts()">Обновить</button>
     </div>
-    <div id="alerts-list"><div class="spinner">Загружаю алерты...</div></div>
+    <div id="alerts-list"><div class="spinner">Загружаю...</div></div>
   </div>
+
+  <div class="screen" id="s-markets">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="section-title" style="margin:0">Топ рынков</div>
       <button class="refresh-btn" onclick="loadMarkets()">Обновить</button>
@@ -217,7 +167,6 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
     <div id="markets-list"><div class="spinner">Загружаю...</div></div>
   </div>
 
-  <!-- NAV -->
   <nav class="nav">
     <button class="nav-btn active" onclick="switchTab('home',this)">
       <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
@@ -243,86 +192,88 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
 </div>
 
 <script>
-const tg = window.Telegram?.WebApp;
+var tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-const STORAGE_KEY = 'pm_wallet_v2';
-let walletAddress = '';
-let positionsCache = [];
+var PROXY = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
+var BOT_TOKEN = '8647418213:AAFZYjw33PNom0o2uWWlIU8MvD6sVivtJgI';  // вставь токен бота
+var CHANNEL_ID = '-1003756982610';
+var STORAGE_KEY = 'pm_wallet_v3';
+var walletAddress = '';
+var lastActivity = [];
+var activityOffset = 0;
 
 // ── LOGIN ──
-function doLogin() {
-  const val = document.getElementById('wallet-input').value.trim();
-  document.getElementById('debug').textContent = 'Адрес: ' + val + ' | Длина: ' + val.length;
+document.getElementById('login-btn').addEventListener('click', function() {
+  var val = document.getElementById('wallet-input').value.trim();
+  var dbg = document.getElementById('debug-msg');
+  dbg.textContent = 'Длина: ' + val.length;
   if (!val.startsWith('0x') || val.length !== 42) {
-    document.getElementById('debug').textContent += ' | ОШИБКА валидации';
-    shake(document.getElementById('wallet-input'));
+    dbg.textContent = 'Неверный адрес. Должен начинаться с 0x и содержать 42 символа. Длина: ' + val.length;
+    document.getElementById('wallet-input').style.borderColor = 'var(--red)';
     return;
   }
+  dbg.textContent = '';
+  document.getElementById('wallet-input').style.borderColor = '';
   walletAddress = val.toLowerCase();
   localStorage.setItem(STORAGE_KEY, walletAddress);
-  document.getElementById('debug').textContent += ' | Входим...';
   showApp();
-}
+});
 
-function switchWallet() {
+document.getElementById('wallet-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+
+document.getElementById('wallet-badge').addEventListener('click', function() {
   localStorage.removeItem(STORAGE_KEY);
   walletAddress = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('wallet-input').value = '';
-}
-
-function shake(el) {
-  el.style.animation = 'none';
-  el.style.borderColor = 'var(--red)';
-  setTimeout(() => el.style.borderColor = '', 1000);
-  if (tg) tg.HapticFeedback?.notificationOccurred('error');
-}
+});
 
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  const addr = walletAddress;
+  var addr = walletAddress;
   document.getElementById('wallet-display').textContent = addr.slice(0,6) + '...' + addr.slice(-4);
   loadAll();
   loadMarkets();
+  loadAlerts();
   kellyCalc();
 }
 
-// ── AUTO LOGIN ──
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved && saved.match(/^0x[0-9a-fA-F]{40}$/)) {
+// Auto login
+window.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem(STORAGE_KEY);
+  if (saved && saved.startsWith('0x') && saved.length === 42) {
     walletAddress = saved;
     document.getElementById('wallet-input').value = saved;
     showApp();
   }
 });
 
-// ── POLYMARKET API ──
+// ── API ──
+async function apiFetch(url) {
+  var r = await fetch(PROXY + encodeURIComponent(url));
+  var text = await r.text();
+  if (!text || !text.trim()) return null;
+  return JSON.parse(text);
+}
+
 async function fetchPositions(address) {
-  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user=${address.toLowerCase()}&sortBy=CURRENT&sortDirection=DESC&sizeThreshold=.1&limit=30&offset=0`);
   try {
-    const r = await fetch(url);
-    const text = await r.text();
-    if (!text || text.trim() === '') return [];
-    const data = JSON.parse(text);
+    var data = await apiFetch('https://data-api.polymarket.com/positions?user=' + address + '&sortBy=CURRENT&sortDirection=DESC&sizeThreshold=.1&limit=30&offset=0');
     if (Array.isArray(data)) return data;
     if (data && Array.isArray(data.data)) return data.data;
   } catch(e) {}
   return [];
 }
 
-async function fetchActivity(address, offset = 0) {
-  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address.toLowerCase()}&limit=30&offset=${offset}`);
+async function fetchActivity(address, offset) {
+  offset = offset || 0;
   try {
-    const r = await fetch(url);
-    const text = await r.text();
-    if (!text || text.trim() === '') return [];
-    const data = JSON.parse(text);
+    var data = await apiFetch('https://data-api.polymarket.com/activity?user=' + address + '&limit=30&offset=' + offset);
     if (Array.isArray(data)) return data;
     if (data && Array.isArray(data.data)) return data.data;
   } catch(e) {}
@@ -330,307 +281,247 @@ async function fetchActivity(address, offset = 0) {
 }
 
 async function fetchValue(address) {
-  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/value?user=${address.toLowerCase()}`);
   try {
-    const r = await fetch(url);
-    const text = await r.text();
-    if (!text || text.trim() === '') return null;
-    return JSON.parse(text);
+    return await apiFetch('https://data-api.polymarket.com/value?user=' + address);
   } catch(e) {}
   return null;
 }
+
 async function fetchMarkets() {
-  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=${encodeURIComponent("https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false")}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('markets API error');
-  return await r.json();
+  try {
+    var data = await apiFetch('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false');
+    if (Array.isArray(data)) return data;
+  } catch(e) {}
+  return [];
 }
 
 // ── LOAD ALL ──
 async function loadAll() {
-  document.getElementById('h-positions').innerHTML = '<div class="spinner">Загружаю позиции...</div>';
+  document.getElementById('h-positions').innerHTML = '<div class="spinner">Загружаю...</div>';
   try {
-    const [positions, activity, value] = await Promise.all([
+    var results = await Promise.all([
       fetchPositions(walletAddress),
-      fetchActivity(walletAddress),
+      fetchActivity(walletAddress, 0),
       fetchValue(walletAddress)
     ]);
-    positionsCache = positions;
-    window._lastActivity = activity;
-    window._activityOffset = 0;
-    renderDashboard(positions, activity, value);
-    renderActivity(activity);
+    var positions = results[0];
+    var activity = results[1];
+    var value = results[2];
+    lastActivity = activity;
+    activityOffset = 0;
+    renderDashboard(positions, value);
+    renderActivity(activity, false);
   } catch(e) {
-    document.getElementById('h-positions').innerHTML =
-      '<div class="empty">Не удалось загрузить.<br>Проверь адрес кошелька.</div>';
+    document.getElementById('h-positions').innerHTML = '<div class="empty">Не удалось загрузить</div>';
   }
 }
 
 // ── DASHBOARD ──
-function renderDashboard(positions, activity, value) {
-  const open = positions.filter(p => !p.isClosed);
-  const closed = positions.filter(p => p.isClosed);
-  const wins = closed.filter(p => p.cashPnl > 0);
-  const losses = closed.filter(p => p.cashPnl < 0);
+function renderDashboard(positions, value) {
+  var open = positions.filter(function(p) { return !p.isClosed; });
+  var closed = positions.filter(function(p) { return p.isClosed; });
+  var wins = closed.filter(function(p) { return parseFloat(p.cashPnl) > 0; });
+  var losses = closed.filter(function(p) { return parseFloat(p.cashPnl) < 0; });
 
-  const totalValue = value?.portfolioValue ?? open.reduce((a, p) => a + (parseFloat(p.currentValue) || 0), 0);
-  const totalPnl = value?.profit ?? positions.reduce((a, p) => a + (parseFloat(p.cashPnl) || 0), 0);
+  var totalValue = value && value.portfolioValue ? parseFloat(value.portfolioValue) :
+    open.reduce(function(a, p) { return a + (parseFloat(p.currentValue) || 0); }, 0);
+  var totalPnl = value && value.profit ? parseFloat(value.profit) :
+    positions.reduce(function(a, p) { return a + (parseFloat(p.cashPnl) || 0); }, 0);
 
   document.getElementById('h-value').textContent = '$' + totalValue.toFixed(2);
-
-  const pnlEl = document.getElementById('h-pnl');
+  var pnlEl = document.getElementById('h-pnl');
   pnlEl.textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
   pnlEl.style.color = totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
-
   document.getElementById('h-count').textContent = positions.length;
   document.getElementById('h-open').textContent = open.length;
   document.getElementById('h-closed').textContent = closed.length;
   document.getElementById('h-wins').textContent = wins.length;
   document.getElementById('h-losses').textContent = losses.length;
 
-  const container = document.getElementById('h-positions');
-  if (!open.length && !positions.length) {
-    container.innerHTML = '<div class="empty">Позиций не найдено.<br>Возможно API Polymarket временно недоступен<br>или на этом кошельке нет истории.</div>';
-    return;
-  }
+  var container = document.getElementById('h-positions');
   if (!open.length) {
     container.innerHTML = '<div class="empty">Нет открытых позиций</div>';
     return;
   }
-  container.innerHTML = open.map(p => positionHTML(p)).join('');
+  container.innerHTML = open.map(positionHTML).join('');
 }
 
 function positionHTML(p) {
-  const outcome = p.outcome || 'Yes';
-  const question = p.title || p.market || 'N/A';
-  const size = parseFloat(p.size) || 0;
-  const avgPrice = parseFloat(p.avgPrice) || 0;
-  const curPrice = parseFloat(p.curPrice) || parseFloat(p.currentPrice) || 0;
-  const value = parseFloat(p.currentValue) || size * curPrice;
-  const pnl = parseFloat(p.cashPnl) || 0;
-  const pnlPct = avgPrice > 0 ? ((curPrice - avgPrice) / avgPrice * 100) : 0;
-  const isWin = pnl >= 0;
-  const slug = p.slug || '';
-  const url = slug ? `https://polymarket.com/event/${slug}` : 'https://polymarket.com';
-
-  return `<div class="pos-card" onclick="openLink('${url}')">
-    <span class="badge ${isWin ? 'badge-win' : 'badge-loss'}">${isWin ? '↑ В плюсе' : '↓ В минусе'}</span>
-    <div class="pos-question">${question.slice(0,100)}</div>
-    <div class="pos-row"><span class="lbl">Исход</span><span><b>${outcome}</b></span></div>
-    <div class="pos-row"><span class="lbl">Размер позиции</span><span>${size.toFixed(2)} шт</span></div>
-    <div class="pos-row"><span class="lbl">Средняя цена входа</span><span>${(avgPrice*100).toFixed(1)}%</span></div>
-    <div class="pos-row"><span class="lbl">Текущая цена</span><span><b>${(curPrice*100).toFixed(1)}%</b></span></div>
-    <div class="pos-row"><span class="lbl">Стоимость</span><span><b>$${value.toFixed(2)}</b></span></div>
-    <div class="pos-row"><span class="lbl">P&L</span>
-      <span style="color:${isWin?'var(--green)':'var(--red)'};font-weight:700">
-        ${isWin?'+':''}$${pnl.toFixed(2)} (${isWin?'+':''}${pnlPct.toFixed(1)}%)
-      </span>
-    </div>
-    <div class="pos-bar-track">
-      <div class="pos-bar-fill" style="width:${Math.min(curPrice*100,100)}%;background:${isWin?'var(--green)':'var(--red)'}"></div>
-    </div>
-  </div>`;
+  var outcome = p.outcome || 'Yes';
+  var question = p.title || p.market || 'N/A';
+  var avgPrice = parseFloat(p.avgPrice) || 0;
+  var curPrice = parseFloat(p.curPrice) || parseFloat(p.currentPrice) || 0;
+  var value = parseFloat(p.currentValue) || 0;
+  var pnl = parseFloat(p.cashPnl) || 0;
+  var pnlPct = avgPrice > 0 ? ((curPrice - avgPrice) / avgPrice * 100) : 0;
+  var isWin = pnl >= 0;
+  var slug = p.slug || '';
+  var url = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
+  return '<div class="pos-card" onclick="openLink(\'' + url + '\')">' +
+    '<span class="badge ' + (isWin ? 'badge-win' : 'badge-loss') + '">' + (isWin ? '↑ В плюсе' : '↓ В минусе') + '</span>' +
+    '<div class="pos-question">' + question.slice(0,100) + '</div>' +
+    '<div class="pos-row"><span class="lbl">Исход</span><span><b>' + outcome + '</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">Цена входа</span><span>' + (avgPrice*100).toFixed(1) + '%</span></div>' +
+    '<div class="pos-row"><span class="lbl">Текущая цена</span><span><b>' + (curPrice*100).toFixed(1) + '%</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">Стоимость</span><span><b>$' + value.toFixed(2) + '</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">P&L</span><span style="color:' + (isWin?'var(--green)':'var(--red)') + ';font-weight:700">' +
+    (isWin?'+':'') + '$' + pnl.toFixed(2) + ' (' + (isWin?'+':'') + pnlPct.toFixed(1) + '%)</span></div>' +
+    '<div class="pos-bar-track"><div class="pos-bar-fill" style="width:' + Math.min(curPrice*100,100) + '%;background:' + (isWin?'var(--green)':'var(--red)') + '"></div></div>' +
+    '</div>';
 }
 
 // ── ACTIVITY ──
-function renderActivity(activity, append = false) {
-  const list = document.getElementById('activity-list');
+function renderActivity(activity, append) {
+  var list = document.getElementById('activity-list');
   if (!activity || !activity.length) {
     if (!append) list.innerHTML = '<div class="empty">История пустая</div>';
     return;
   }
-  console.log('ACTIVITY SAMPLE:', JSON.stringify(activity[0]));
-  const items = activity.map(a => {
-    const isBuy = (a.side || '').toUpperCase() === 'BUY';
-    const amount = parseFloat(a.usdcSize) || 0;
-    const price = parseFloat(a.price) || 0;
-    const title = a.title || a.name || 'N/A';
-    const outcome = a.outcome || 'Yes';
-    const slug = a.eventSlug || a.slug || '';
-    const url = slug ? `https://polymarket.com/event/${slug}` : 'https://polymarket.com';
-    const ts = a.timestamp ? new Date(a.timestamp * 1000).toLocaleDateString('ru', {
-      day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
-    }) : '—';
-    return `<div class="activity-item" onclick="openLink('${url}')" style="cursor:pointer">
-      <div class="act-dot" style="background:${isBuy?'var(--green)':'var(--red)'}"></div>
-      <div class="act-info">
-        <div class="act-q">${title.slice(0,60)}</div>
-        <div class="act-meta">${isBuy?'Купил':'Продал'} ${outcome} · ${(price*100).toFixed(0)}% · ${ts}</div>
-      </div>
-      <div class="act-amt" style="color:${isBuy?'var(--green)':'var(--red)'}">
-        ${isBuy?'+':'−'}$${amount.toFixed(2)}
-      </div>
-    </div>`;
+  var items = activity.map(function(a) {
+    var isBuy = (a.side || '').toUpperCase() === 'BUY';
+    var amount = parseFloat(a.usdcSize) || 0;
+    var price = parseFloat(a.price) || 0;
+    var title = a.title || a.name || 'N/A';
+    var outcome = a.outcome || 'Yes';
+    var slug = a.eventSlug || a.slug || '';
+    var url = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
+    var ts = a.timestamp ? new Date(a.timestamp * 1000).toLocaleDateString('ru', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+    return '<div class="activity-item" onclick="openLink(\'' + url + '\')">' +
+      '<div class="act-dot" style="background:' + (isBuy?'var(--green)':'var(--red)') + '"></div>' +
+      '<div class="act-info"><div class="act-q">' + title.slice(0,60) + '</div>' +
+      '<div class="act-meta">' + (isBuy?'Купил':'Продал') + ' ' + outcome + ' · ' + (price*100).toFixed(0) + '% · ' + ts + '</div></div>' +
+      '<div class="act-amt" style="color:' + (isBuy?'var(--green)':'var(--red)') + '">' + (isBuy?'+':'−') + '$' + amount.toFixed(2) + '</div>' +
+      '</div>';
   }).join('');
 
   if (append) {
-    const card = document.getElementById('activity-card');
-    const btn = document.getElementById('load-more-btn');
+    var card = document.getElementById('activity-card');
+    var btn = document.getElementById('load-more-btn');
     if (btn) btn.remove();
     card.insertAdjacentHTML('beforeend', items);
   } else {
-    list.innerHTML = `<div class="card" id="activity-card">${items}</div>`;
+    list.innerHTML = '<div class="card" id="activity-card">' + items + '</div>';
   }
 
-  // Add "load more" button if got full page
   if (activity.length === 30) {
-    const card = document.getElementById('activity-card');
-    const currentOffset = (window._activityOffset || 0) + 30;
-    window._activityOffset = currentOffset;
-    card.insertAdjacentHTML('afterend', `
-      <button id="load-more-btn" class="btn secondary" style="margin-top:8px" onclick="loadMoreActivity()">
-        Загрузить ещё
-      </button>
-    `);
+    activityOffset += 30;
+    list.insertAdjacentHTML('beforeend', '<button id="load-more-btn" class="btn secondary" style="margin-top:8px" onclick="loadMoreActivity()">Загрузить ещё</button>');
   }
 }
 
 async function loadMoreActivity() {
-  const btn = document.getElementById('load-more-btn');
+  var btn = document.getElementById('load-more-btn');
   if (btn) btn.textContent = 'Загружаю...';
-  const offset = window._activityOffset || 30;
-  const more = await fetchActivity(walletAddress, offset);
-  window._lastActivity = (window._lastActivity || []).concat(more);
+  var more = await fetchActivity(walletAddress, activityOffset);
+  lastActivity = lastActivity.concat(more);
   renderActivity(more, true);
 }
 
+// ── ALERTS ──
 async function loadAlerts() {
-  const list = document.getElementById('alerts-list');
+  var list = document.getElementById('alerts-list');
   if (!list) return;
+  if (!BOT_TOKEN) {
+    list.innerHTML = '<div class="empty">Вставь BOT_TOKEN в код Mini App</div>';
+    return;
+  }
   list.innerHTML = '<div class="spinner">Загружаю алерты...</div>';
   try {
-    const token = '8647418213:AAFZYjw33PNom0o2uWWlIU8MvD6sVivtJgI'; // вставь токен бота
-    const channelId = '-1003756982610';
-    const url = `https://api.telegram.org/bot${token}/getUpdates?chat_id=${channelId}&limit=20`;
-    
-    // Используем альтернативный метод — getChatHistory через Worker
-    const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-    const apiUrl = proxy + encodeURIComponent(`https://api.telegram.org/bot${token}/forwardMessage`);
-
-    // Читаем через getUpdates канала
-    const resp = await fetch(proxy + encodeURIComponent(
-      `https://api.telegram.org/bot${token}/updates?channel_id=${channelId}&limit=20`
-    ));
-    const text = await resp.text();
-    const data = JSON.parse(text);
-
-    if (!data.ok || !data.result?.length) {
-      list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
+    var data = await apiFetch('https://api.telegram.org/bot' + BOT_TOKEN + '/getUpdates?limit=50&allowed_updates=["channel_post"]');
+    if (!data || !data.ok) {
+      list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
       return;
     }
-
-    const msgs = data.result
-      .filter(u => u.channel_post)
-      .map(u => u.channel_post)
+    var msgs = (data.result || [])
+      .filter(function(u) { return u.channel_post && String(u.channel_post.chat.id) === CHANNEL_ID; })
+      .map(function(u) { return u.channel_post; })
       .reverse();
 
     if (!msgs.length) {
-      list.innerHTML = '<div class="empty">Алертов пока нет</div>';
+      list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
       return;
     }
-
-    list.innerHTML = msgs.map(m => {
-      const text = m.text || '';
-      const isUp = text.includes('ВЫРОС');
-      const date = new Date(m.date * 1000).toLocaleDateString('ru', {
-        day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
-      });
-      return `<div class="mkt-card">
-        <span class="mkt-tag ${isUp ? 'tag-up' : 'tag-dn'}">${isUp ? '↑ Рост' : '↓ Падение'}</span>
-        <div style="font-size:13px;line-height:1.5;white-space:pre-wrap;color:var(--text)">${text.slice(0,300)}</div>
-        <div style="font-size:11px;color:var(--hint);margin-top:8px">${date}</div>
-      </div>`;
+    list.innerHTML = msgs.map(function(m) {
+      var text = m.text || '';
+      var isUp = text.includes('ВЫРОС');
+      var date = new Date(m.date * 1000).toLocaleDateString('ru', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return '<div class="alert-card">' +
+        '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '↑ Рост' : '↓ Падение') + '</span>' +
+        '<div class="alert-text">' + text.slice(0,400) + '</div>' +
+        '<div class="alert-date">' + date + '</div>' +
+        '</div>';
     }).join('');
   } catch(e) {
-    list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
+    list.innerHTML = '<div class="empty">Ошибка загрузки алертов</div>';
   }
 }
-  const list = document.getElementById('markets-list');
+
+// ── MARKETS ──
+async function loadMarkets() {
+  var list = document.getElementById('markets-list');
   list.innerHTML = '<div class="spinner">Загружаю рынки...</div>';
   try {
-    const markets = await fetchMarkets();
-    list.innerHTML = markets.slice(0,15).map(m => {
-      let outcomes = [], prices = [];
-      try { outcomes = JSON.parse(m.outcomes||'[]'); prices = JSON.parse(m.outcomePrices||'[]'); } catch{}
-      const outcome = outcomes[0] || 'Yes';
-      const price = prices[0] ? parseFloat(prices[0])*100 : 0;
-      const vol = parseFloat(m.volume24hr||0);
-      const slug = m.slug||'';
-      const url = slug ? `https://polymarket.com/event/${slug}` : 'https://polymarket.com';
-      const isHigh = price > 65, isLow = price < 35;
-      const tagClass = isHigh ? 'tag-up' : isLow ? 'tag-dn' : 'tag-mid';
-      const tagText = isHigh ? '↑ Лидирует' : isLow ? '↓ Маловероятно' : '≈ Неопределён';
-
-      // Kelly hint для текущей цены
-      const kHint = kellyHint(price / 100);
-
-      return `<div class="mkt-card" onclick="openLink('${url}')">
-        <span class="mkt-tag ${tagClass}">${tagText}</span>
-        <div class="mkt-q">${(m.question||'N/A').slice(0,80)}</div>
-        <div class="mkt-meta">
-          <span>${outcome}: <b>${price.toFixed(0)}%</b></span>
-          <span>Vol 24h: $${vol>=1000?(vol/1000).toFixed(0)+'K':vol.toFixed(0)}</span>
-          ${kHint ? `<span style="color:var(--accent)">Kelly: ${kHint}</span>` : ''}
-        </div>
-      </div>`;
+    var markets = await fetchMarkets();
+    list.innerHTML = markets.slice(0,15).map(function(m) {
+      var outcomes = [], prices = [];
+      try { outcomes = JSON.parse(m.outcomes||'[]'); prices = JSON.parse(m.outcomePrices||'[]'); } catch(e) {}
+      var outcome = outcomes[0] || 'Yes';
+      var price = prices[0] ? parseFloat(prices[0])*100 : 0;
+      var vol = parseFloat(m.volume24hr||0);
+      var slug = m.slug||'';
+      var url = slug ? 'https://polymarket.com/event/'+slug : 'https://polymarket.com';
+      var isHigh = price > 65, isLow = price < 35;
+      var tagClass = isHigh ? 'tag-up' : isLow ? 'tag-dn' : 'tag-mid';
+      var tagText = isHigh ? '↑ Лидирует' : isLow ? '↓ Маловероятно' : '≈ Неопределён';
+      return '<div class="mkt-card" onclick="openLink(\'' + url + '\')">' +
+        '<span class="mkt-tag ' + tagClass + '">' + tagText + '</span>' +
+        '<div class="mkt-q">' + (m.question||'N/A').slice(0,80) + '</div>' +
+        '<div class="mkt-meta"><span>' + outcome + ': <b>' + price.toFixed(0) + '%</b></span>' +
+        '<span>Vol 24h: $' + (vol>=1000?(vol/1000).toFixed(0)+'K':vol.toFixed(0)) + '</span></div>' +
+        '</div>';
     }).join('');
   } catch(e) {
     list.innerHTML = '<div class="empty">Не удалось загрузить рынки</div>';
   }
 }
 
-function kellyHint(mktProb) {
-  const edge = 0.05;
-  const p = Math.min(mktProb + edge, 0.99);
-  const q = 1 - p;
-  const b = mktProb < 1 ? (1 - mktProb) / mktProb : 0;
-  if (b <= 0) return '';
-  const k = Math.max((b * p - q) / b, 0) * 0.5;
-  const capped = Math.min(k, 0.25);
-  if (capped < 0.01) return '';
-  return (capped * 100).toFixed(1) + '% банкролла';
-}
-
 // ── KELLY ──
 function kellyCalc() {
-  const B = parseFloat(document.getElementById('k-bankroll').value);
-  const p = parseFloat(document.getElementById('k-myprob').value) / 100;
-  const mkt = parseFloat(document.getElementById('k-mktprob').value) / 100;
+  var B = parseFloat(document.getElementById('k-bankroll').value);
+  var p = parseFloat(document.getElementById('k-myprob').value) / 100;
+  var mkt = parseFloat(document.getElementById('k-mktprob').value) / 100;
   document.getElementById('k-bv').textContent = '$' + B;
   document.getElementById('k-mpv').textContent = Math.round(p*100) + '%';
   document.getElementById('k-mkpv').textContent = Math.round(mkt*100) + '%';
-  const q = 1 - p;
-  const b = mkt < 1 ? (1-mkt)/mkt : 0;
-  const warn = document.getElementById('k-warn');
-  if (b <= 0) { warn.style.display='block'; return; }
-  const kelly = Math.max((b*p-q)/b, 0);
+  var q = 1-p, b = mkt < 1 ? (1-mkt)/mkt : 0;
+  var warn = document.getElementById('k-warn');
+  var kelly = b > 0 ? Math.max((b*p-q)/b, 0) : 0;
   if (kelly <= 0) {
     warn.style.display = 'block';
-    ['k-pct','k-usd','k-win','k-lose'].forEach(id => document.getElementById(id).textContent='—');
+    ['k-pct','k-usd','k-win','k-lose'].forEach(function(id) { document.getElementById(id).textContent = '—'; });
     document.getElementById('k-edge').textContent = '';
     return;
   }
   warn.style.display = 'none';
-  const kc = Math.min(kelly * 0.5, 0.25);
-  const bet = B * kc;
-  const win = bet * b;
+  var kc = Math.min(kelly * 0.5, 0.25);
+  var bet = B * kc, win = bet * b;
   document.getElementById('k-pct').textContent = (kc*100).toFixed(1)+'%';
   document.getElementById('k-usd').textContent = '$'+bet.toFixed(2);
   document.getElementById('k-win').textContent = '+$'+win.toFixed(2);
   document.getElementById('k-lose').textContent = '-$'+bet.toFixed(2);
   document.getElementById('k-edge').textContent = 'Преимущество: ~'+((p-mkt)*100).toFixed(1)+'%';
 }
-['k-bankroll','k-myprob','k-mktprob'].forEach(id =>
-  document.getElementById(id).addEventListener('input', kellyCalc));
+['k-bankroll','k-myprob','k-mktprob'].forEach(function(id) {
+  document.getElementById(id).addEventListener('input', kellyCalc);
+});
 
 // ── TABS ──
 function switchTab(name, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('s-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'activity') renderActivity(window._lastActivity || []);
+  if (name === 'activity') renderActivity(lastActivity, false);
   if (name === 'alerts') loadAlerts();
   if (name === 'markets') loadMarkets();
 }
@@ -639,11 +530,6 @@ function openLink(url) {
   if (tg) tg.openLink(url);
   else window.open(url,'_blank');
 }
-
-// ── WALLET INPUT ENTER ──
-document.getElementById('wallet-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
 </script>
 </body>
 </html>
