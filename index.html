@@ -289,41 +289,32 @@ window.addEventListener('DOMContentLoaded', () => {
 // ── POLYMARKET API ──
 async function fetchPositions(address) {
   const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const endpoints = [
-    proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user_address=${address}&sizeThreshold=0&limit=100`),
-    proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user=${address}&limit=100`),
-    proxy + encodeURIComponent(`https://gamma-api.polymarket.com/positions?user_address=${address}&limit=100`),
-  ];
-  for (const url of endpoints) {
-    try {
-      const r = await fetch(url);
-      const text = await r.text();
-      if (!text || text.trim() === '') continue;
-      const data = JSON.parse(text);
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.data)) return data.data;
-    } catch(e) { continue; }
-  }
+  // CLOB API — публичный, не требует авторизации
+  const url = proxy + encodeURIComponent(`https://clob.polymarket.com/positions?user=${address.toLowerCase()}`);
+  try {
+    const r = await fetch(url);
+    const text = await r.text();
+    if (!text || text.trim() === '') return [];
+    const data = JSON.parse(text);
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.positions)) return data.positions;
+    if (data && Array.isArray(data.data)) return data.data;
+  } catch(e) {}
   return [];
 }
 
 async function fetchActivity(address) {
   const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const endpoints = [
-    proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address}&limit=50`),
-    proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user_address=${address}&limit=50`),
-    proxy + encodeURIComponent(`https://data-api.polymarket.com/trade-history?user=${address}&limit=50`),
-  ];
-  for (const url of endpoints) {
-    try {
-      const r = await fetch(url);
-      const text = await r.text();
-      if (!text || text.trim() === '') continue;
-      const data = JSON.parse(text);
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.data)) return data.data;
-    } catch(e) { continue; }
-  }
+  const url = proxy + encodeURIComponent(`https://clob.polymarket.com/trade-history?maker_address=${address.toLowerCase()}&limit=50`);
+  try {
+    const r = await fetch(url);
+    const text = await r.text();
+    if (!text || text.trim() === '') return [];
+    const data = JSON.parse(text);
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.history)) return data.history;
+    if (data && Array.isArray(data.data)) return data.data;
+  } catch(e) {}
   return [];
 }
 
