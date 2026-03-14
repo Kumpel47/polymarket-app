@@ -119,6 +119,7 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
   <div class="login-title">Polymarket Dashboard</div>
   <div class="login-sub">Введи адрес своего кошелька (0x...)<br>чтобы увидеть позиции и P&L в реальном времени</div>
   <input class="wallet-input" id="wallet-input" placeholder="0x742d35Cc6634C0532925a3b8D4C9..." autocomplete="off" spellcheck="false">
+  <div id="debug" style="color:#ff453a;font-size:12px;margin-bottom:8px;word-break:break-all"></div>
   <button class="btn" id="login-btn" onclick="doLogin()">Войти</button>
   <div class="login-hint">Read-only доступ. Приватный ключ не нужен.<br>Данные берутся напрямую с Polymarket.</div>
 </div>
@@ -242,15 +243,15 @@ let positionsCache = [];
 // ── LOGIN ──
 function doLogin() {
   const val = document.getElementById('wallet-input').value.trim();
-  alert('Адрес: ' + val + ' | Длина: ' + val.length);
+  document.getElementById('debug').textContent = 'Адрес: ' + val + ' | Длина: ' + val.length;
   if (!val.startsWith('0x') || val.length !== 42) {
-    alert('Не прошёл проверку');
+    document.getElementById('debug').textContent += ' | ОШИБКА валидации';
     shake(document.getElementById('wallet-input'));
     return;
   }
   walletAddress = val.toLowerCase();
   localStorage.setItem(STORAGE_KEY, walletAddress);
-  alert('Входим...');
+  document.getElementById('debug').textContent += ' | Входим...';
   showApp();
 }
 
