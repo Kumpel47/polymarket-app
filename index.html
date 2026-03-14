@@ -327,9 +327,8 @@ async function fetchValue(address) {
     const text = await r.text();
     if (!text || text.trim() === '') return null;
     return JSON.parse(text);
-  } catch(e) {}
-  return null;
 }
+async function fetchMarkets() {
   const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=${encodeURIComponent("https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false")}`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('markets API error');
