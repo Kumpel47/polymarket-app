@@ -428,6 +428,7 @@ function renderActivity(activity) {
     list.innerHTML = '<div class="empty">История пустая</div>';
     return;
   }
+  console.log('ACTIVITY SAMPLE:', JSON.stringify(activity[0]));
   list.innerHTML = '<div class="card">' + activity.slice(0,30).map(a => {
     const isBuy = (a.side || '').toLowerCase() === 'buy';
     const amount = parseFloat(a.usdcSize) || parseFloat(a.size) || 0;
