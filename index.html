@@ -202,8 +202,14 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
     <div style="margin-top:12px;font-size:12px;color:var(--hint);text-align:center" id="k-edge"></div>
   </div>
 
-  <!-- MARKETS -->
-  <div class="screen" id="s-markets">
+  <!-- ALERTS -->
+  <div class="screen" id="s-alerts">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-title" style="margin:0">Алерты</div>
+      <button class="refresh-btn" onclick="loadAlerts()">Обновить</button>
+    </div>
+    <div id="alerts-list"><div class="spinner">Загружаю алерты...</div></div>
+  </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="section-title" style="margin:0">Топ рынков</div>
       <button class="refresh-btn" onclick="loadMarkets()">Обновить</button>
@@ -224,6 +230,10 @@ input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
     <button class="nav-btn" onclick="switchTab('kelly',this)">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
       Kelly
+    </button>
+    <button class="nav-btn" onclick="switchTab('alerts',this)">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      Алерты
     </button>
     <button class="nav-btn" onclick="switchTab('markets',this)">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -485,8 +495,57 @@ async function loadMoreActivity() {
   renderActivity(more, true);
 }
 
-// ── MARKETS ──
-async function loadMarkets() {
+async function loadAlerts() {
+  const list = document.getElementById('alerts-list');
+  if (!list) return;
+  list.innerHTML = '<div class="spinner">Загружаю алерты...</div>';
+  try {
+    const token = '8647418213:AAFZYjw33PNom0o2uWWlIU8MvD6sVivtJgI'; // вставь токен бота
+    const channelId = '-1003756982610';
+    const url = `https://api.telegram.org/bot${token}/getUpdates?chat_id=${channelId}&limit=20`;
+    
+    // Используем альтернативный метод — getChatHistory через Worker
+    const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
+    const apiUrl = proxy + encodeURIComponent(`https://api.telegram.org/bot${token}/forwardMessage`);
+
+    // Читаем через getUpdates канала
+    const resp = await fetch(proxy + encodeURIComponent(
+      `https://api.telegram.org/bot${token}/updates?channel_id=${channelId}&limit=20`
+    ));
+    const text = await resp.text();
+    const data = JSON.parse(text);
+
+    if (!data.ok || !data.result?.length) {
+      list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
+      return;
+    }
+
+    const msgs = data.result
+      .filter(u => u.channel_post)
+      .map(u => u.channel_post)
+      .reverse();
+
+    if (!msgs.length) {
+      list.innerHTML = '<div class="empty">Алертов пока нет</div>';
+      return;
+    }
+
+    list.innerHTML = msgs.map(m => {
+      const text = m.text || '';
+      const isUp = text.includes('ВЫРОС');
+      const date = new Date(m.date * 1000).toLocaleDateString('ru', {
+        day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+      });
+      return `<div class="mkt-card">
+        <span class="mkt-tag ${isUp ? 'tag-up' : 'tag-dn'}">${isUp ? '↑ Рост' : '↓ Падение'}</span>
+        <div style="font-size:13px;line-height:1.5;white-space:pre-wrap;color:var(--text)">${text.slice(0,300)}</div>
+        <div style="font-size:11px;color:var(--hint);margin-top:8px">${date}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
+  }
+}
   const list = document.getElementById('markets-list');
   list.innerHTML = '<div class="spinner">Загружаю рынки...</div>';
   try {
@@ -572,6 +631,7 @@ function switchTab(name, btn) {
   document.getElementById('s-'+name).classList.add('active');
   btn.classList.add('active');
   if (name === 'activity') renderActivity(window._lastActivity || []);
+  if (name === 'alerts') loadAlerts();
   if (name === 'markets') loadMarkets();
 }
 
