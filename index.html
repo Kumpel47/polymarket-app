@@ -347,6 +347,7 @@ async function loadAll() {
       fetchValue(walletAddress)
     ]);
     positionsCache = positions;
+    window._lastActivity = activity;
     renderDashboard(positions, activity, value);
     renderActivity(activity);
   } catch(e) {
