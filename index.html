@@ -303,20 +303,29 @@ async function fetchPositions(address) {
 
 async function fetchActivity(address) {
   const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const url = proxy + encodeURIComponent(`https://clob.polymarket.com/trade-history?maker_address=${address.toLowerCase()}&limit=50`);
+  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address.toLowerCase()}&limit=30&offset=0`);
   try {
     const r = await fetch(url);
     const text = await r.text();
     if (!text || text.trim() === '') return [];
     const data = JSON.parse(text);
     if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.history)) return data.history;
     if (data && Array.isArray(data.data)) return data.data;
   } catch(e) {}
   return [];
 }
 
-async function fetchMarkets() {
+async function fetchValue(address) {
+  const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
+  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/value?user=${address.toLowerCase()}`);
+  try {
+    const r = await fetch(url);
+    const text = await r.text();
+    if (!text || text.trim() === '') return null;
+    return JSON.parse(text);
+  } catch(e) {}
+  return null;
+}
   const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=${encodeURIComponent("https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false")}`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('markets API error');
@@ -327,12 +336,13 @@ async function fetchMarkets() {
 async function loadAll() {
   document.getElementById('h-positions').innerHTML = '<div class="spinner">Загружаю позиции...</div>';
   try {
-    const [positions, activity] = await Promise.all([
+    const [positions, activity, value] = await Promise.all([
       fetchPositions(walletAddress),
-      fetchActivity(walletAddress)
+      fetchActivity(walletAddress),
+      fetchValue(walletAddress)
     ]);
     positionsCache = positions;
-    renderDashboard(positions, activity);
+    renderDashboard(positions, activity, value);
     renderActivity(activity);
   } catch(e) {
     document.getElementById('h-positions').innerHTML =
@@ -341,14 +351,14 @@ async function loadAll() {
 }
 
 // ── DASHBOARD ──
-function renderDashboard(positions, activity) {
+function renderDashboard(positions, activity, value) {
   const open = positions.filter(p => !p.isClosed);
   const closed = positions.filter(p => p.isClosed);
   const wins = closed.filter(p => p.cashPnl > 0);
   const losses = closed.filter(p => p.cashPnl < 0);
 
-  const totalValue = open.reduce((a, p) => a + (parseFloat(p.currentValue) || 0), 0);
-  const totalPnl = positions.reduce((a, p) => a + (parseFloat(p.cashPnl) || 0), 0);
+  const totalValue = value?.portfolioValue ?? open.reduce((a, p) => a + (parseFloat(p.currentValue) || 0), 0);
+  const totalPnl = value?.profit ?? positions.reduce((a, p) => a + (parseFloat(p.cashPnl) || 0), 0);
 
   document.getElementById('h-value').textContent = '$' + totalValue.toFixed(2);
 
