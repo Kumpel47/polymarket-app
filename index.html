@@ -302,7 +302,7 @@ async function fetchActivity(address) {
 }
 
 async function fetchMarkets() {
-  const url = `https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false`;
+  const url = `https://corsproxy.io/?https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('markets API error');
   return await r.json();
