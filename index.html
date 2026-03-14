@@ -305,9 +305,9 @@ async function fetchPositions(address) {
   return [];
 }
 
-async function fetchActivity(address) {
+async function fetchActivity(address, offset = 0) {
   const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address.toLowerCase()}&limit=30&offset=0`);
+  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/activity?user=${address.toLowerCase()}&limit=30&offset=${offset}`);
   try {
     const r = await fetch(url);
     const text = await r.text();
@@ -348,6 +348,7 @@ async function loadAll() {
     ]);
     positionsCache = positions;
     window._lastActivity = activity;
+    window._activityOffset = 0;
     renderDashboard(positions, activity, value);
     renderActivity(activity);
   } catch(e) {
@@ -423,14 +424,14 @@ function positionHTML(p) {
 }
 
 // ── ACTIVITY ──
-function renderActivity(activity) {
+function renderActivity(activity, append = false) {
   const list = document.getElementById('activity-list');
   if (!activity || !activity.length) {
-    list.innerHTML = '<div class="empty">История пустая</div>';
+    if (!append) list.innerHTML = '<div class="empty">История пустая</div>';
     return;
   }
   console.log('ACTIVITY SAMPLE:', JSON.stringify(activity[0]));
-  list.innerHTML = '<div class="card">' + activity.slice(0,30).map(a => {
+  const items = activity.map(a => {
     const isBuy = (a.side || '').toUpperCase() === 'BUY';
     const amount = parseFloat(a.usdcSize) || 0;
     const price = parseFloat(a.price) || 0;
@@ -451,7 +452,37 @@ function renderActivity(activity) {
         ${isBuy?'+':'−'}$${amount.toFixed(2)}
       </div>
     </div>`;
-  }).join('') + '</div>';
+  }).join('');
+
+  if (append) {
+    const card = document.getElementById('activity-card');
+    const btn = document.getElementById('load-more-btn');
+    if (btn) btn.remove();
+    card.insertAdjacentHTML('beforeend', items);
+  } else {
+    list.innerHTML = `<div class="card" id="activity-card">${items}</div>`;
+  }
+
+  // Add "load more" button if got full page
+  if (activity.length === 30) {
+    const card = document.getElementById('activity-card');
+    const currentOffset = (window._activityOffset || 0) + 30;
+    window._activityOffset = currentOffset;
+    card.insertAdjacentHTML('afterend', `
+      <button id="load-more-btn" class="btn secondary" style="margin-top:8px" onclick="loadMoreActivity()">
+        Загрузить ещё
+      </button>
+    `);
+  }
+}
+
+async function loadMoreActivity() {
+  const btn = document.getElementById('load-more-btn');
+  if (btn) btn.textContent = 'Загружаю...';
+  const offset = window._activityOffset || 30;
+  const more = await fetchActivity(walletAddress, offset);
+  window._lastActivity = (window._lastActivity || []).concat(more);
+  renderActivity(more, true);
 }
 
 // ── MARKETS ──
