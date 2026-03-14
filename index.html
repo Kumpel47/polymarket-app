@@ -288,21 +288,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ── POLYMARKET API ──
 async function fetchPositions(address) {
-  const url = `https://corsproxy.io/?https://data-api.polymarket.com/positions?user_address=${address}&sizeThreshold=0&limit=100`;
+  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=https://data-api.polymarket.com/positions?user_address=${address}&sizeThreshold=0&limit=100`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('positions API error');
   return await r.json();
 }
 
 async function fetchActivity(address) {
-  const url = `https://corsproxy.io/?https://data-api.polymarket.com/activity?user=${address}&limit=50`;
+  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=https://data-api.polymarket.com/activity?user=${address}&limit=50`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('activity API error');
   return await r.json();
 }
 
 async function fetchMarkets() {
-  const url = `https://corsproxy.io/?https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false`;
+  const url = `https://polymarket-proxy.matviidavydenko.workers.dev/?url=https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&order=volume24hr&ascending=false`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('markets API error');
   return await r.json();
