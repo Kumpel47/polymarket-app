@@ -289,15 +289,13 @@ window.addEventListener('DOMContentLoaded', () => {
 // ── POLYMARKET API ──
 async function fetchPositions(address) {
   const proxy = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-  // CLOB API — публичный, не требует авторизации
-  const url = proxy + encodeURIComponent(`https://clob.polymarket.com/positions?user=${address.toLowerCase()}`);
+  const url = proxy + encodeURIComponent(`https://data-api.polymarket.com/positions?user=${address.toLowerCase()}&sortBy=CURRENT&sortDirection=DESC&sizeThreshold=.1&limit=30&offset=0`);
   try {
     const r = await fetch(url);
     const text = await r.text();
     if (!text || text.trim() === '') return [];
     const data = JSON.parse(text);
     if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.positions)) return data.positions;
     if (data && Array.isArray(data.data)) return data.data;
   } catch(e) {}
   return [];
