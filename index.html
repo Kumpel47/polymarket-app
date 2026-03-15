@@ -196,7 +196,7 @@ var tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
 var PROXY = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-var BOT_TOKEN = '8647418213:AAFZYjw33PNom0o2uWWlIU8MvD6sVivtJgI';  // вставь токен бота
+var BOT_TOKEN = '';  // вставь токен бота
 var CHANNEL_ID = '-1003756982610';
 var STORAGE_KEY = 'pm_wallet_v3';
 var walletAddress = '';
@@ -421,38 +421,38 @@ async function loadMoreActivity() {
 async function loadAlerts() {
   var list = document.getElementById('alerts-list');
   if (!list) return;
-  if (!BOT_TOKEN) {
-    list.innerHTML = '<div class="empty">Вставь BOT_TOKEN в код Mini App</div>';
-    return;
-  }
   list.innerHTML = '<div class="spinner">Загружаю алерты...</div>';
   try {
-    var data = await apiFetch('https://api.telegram.org/bot' + BOT_TOKEN + '/getUpdates?limit=50&allowed_updates=["channel_post"]');
-    if (!data || !data.ok) {
-      list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
-      return;
-    }
-    var msgs = (data.result || [])
-      .filter(function(u) { return u.channel_post && String(u.channel_post.chat.id) === CHANNEL_ID; })
-      .map(function(u) { return u.channel_post; })
-      .reverse();
+    var gistId = 'e5838babeacaff17156161a38f18f40d';
+    var url = 'https://gist.githubusercontent.com/raw/' + gistId + '/alerts.json?t=' + Date.now();
+    var r = await fetch(url);
+    var text = await r.text();
+    var alerts = JSON.parse(text);
 
-    if (!msgs.length) {
+    if (!alerts || !alerts.length) {
       list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
       return;
     }
-    list.innerHTML = msgs.map(function(m) {
-      var text = m.text || '';
-      var isUp = text.includes('ВЫРОС');
-      var date = new Date(m.date * 1000).toLocaleDateString('ru', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-      return '<div class="alert-card">' +
-        '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '↑ Рост' : '↓ Падение') + '</span>' +
-        '<div class="alert-text">' + text.slice(0,400) + '</div>' +
+
+    list.innerHTML = alerts.map(function(a) {
+      var isUp = a.delta > 0;
+      var date = new Date(a.timestamp * 1000).toLocaleDateString('ru', {
+        day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+      });
+      var slug = a.slug || '';
+      var url = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
+      return '<div class="alert-card" onclick="openLink(\'' + url + '\')" style="cursor:pointer">' +
+        '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '🚀 +' : '💥 ') + Math.abs(a.delta).toFixed(1) + '%</span>' +
+        '<div class="mkt-q">' + (a.question || '').slice(0, 80) + '</div>' +
+        '<div class="mkt-meta">' +
+          '<span>Исход: <b>' + (a.outcome || '') + '</b></span>' +
+          '<span>' + a.old_price + '% → <b>' + a.new_price + '%</b></span>' +
+        '</div>' +
         '<div class="alert-date">' + date + '</div>' +
         '</div>';
     }).join('');
   } catch(e) {
-    list.innerHTML = '<div class="empty">Ошибка загрузки алертов</div>';
+    list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
   }
 }
 
