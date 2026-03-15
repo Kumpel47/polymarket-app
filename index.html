@@ -156,6 +156,10 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
       <div class="section-title" style="margin:0">Алерты</div>
       <button class="refresh-btn" onclick="loadAlerts()">Обновить</button>
     </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button id="tab-all" onclick="setAlertsTab('all')" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--atxt)">Все</button>
+      <button id="tab-hot" onclick="setAlertsTab('hot')" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.06);color:var(--hint)">🔥 Горячие</button>
+    </div>
     <div id="alerts-list"><div class="spinner">Загружаю...</div></div>
   </div>
 
@@ -418,42 +422,90 @@ async function loadMoreActivity() {
 }
 
 // ── ALERTS ──
+var alertsCache = [];
+var alertsTab = 'all';
+
+function setAlertsTab(tab) {
+  alertsTab = tab;
+  var allBtn = document.getElementById('tab-all');
+  var hotBtn = document.getElementById('tab-hot');
+  if (allBtn && hotBtn) {
+    allBtn.style.background = tab === 'all' ? 'var(--accent)' : 'rgba(255,255,255,.06)';
+    allBtn.style.color = tab === 'all' ? 'var(--atxt)' : 'var(--hint)';
+    hotBtn.style.background = tab === 'hot' ? 'var(--accent)' : 'rgba(255,255,255,.06)';
+    hotBtn.style.color = tab === 'hot' ? 'var(--atxt)' : 'var(--hint)';
+  }
+  renderAlerts();
+}
+
 async function loadAlerts() {
   var list = document.getElementById('alerts-list');
   if (!list) return;
-  list.innerHTML = '<div class="spinner">Загружаю алерты...</div>';
   try {
     var gistId = 'e5838babeacaff17156161a38f18f40d';
     var url = 'https://gist.githubusercontent.com/raw/' + gistId + '/alerts.json?t=' + Date.now();
     var r = await fetch(url);
     var text = await r.text();
-    var alerts = JSON.parse(text);
-
-    if (!alerts || !alerts.length) {
-      list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
+    var fresh = JSON.parse(text);
+    if (!fresh || !fresh.length) {
+      if (!alertsCache.length) list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
       return;
     }
-
-    list.innerHTML = alerts.map(function(a) {
-      var isUp = a.delta > 0;
-      var date = new Date(a.timestamp * 1000).toLocaleDateString('ru', {
-        day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
-      });
-      var slug = a.slug || '';
-      var url = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
-      return '<div class="alert-card" onclick="openLink(\'' + url + '\')" style="cursor:pointer">' +
-        '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '🚀 +' : '💥 ') + Math.abs(a.delta).toFixed(1) + '%</span>' +
-        '<div class="mkt-q">' + (a.question || '').slice(0, 80) + '</div>' +
-        '<div class="mkt-meta">' +
-          '<span>Исход: <b>' + (a.outcome || '') + '</b></span>' +
-          '<span>' + a.old_price + '% → <b>' + a.new_price + '%</b></span>' +
-        '</div>' +
-        '<div class="alert-date">' + date + '</div>' +
-        '</div>';
-    }).join('');
+    // Добавляем только новые (по timestamp)
+    var lastTs = alertsCache.length ? alertsCache[0].timestamp : 0;
+    var newAlerts = fresh.filter(function(a) { return a.timestamp > lastTs; });
+    if (newAlerts.length) {
+      alertsCache = fresh;
+      renderAlerts();
+    }
   } catch(e) {
-    list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
+    if (!alertsCache.length) list.innerHTML = '<div class="empty">Не удалось загрузить алерты</div>';
   }
+}
+
+function isHotAlert(a) {
+  var price = a.new_price || 0;
+  var vol = a.volume || 0;
+  var delta = Math.abs(a.delta || 0);
+  return vol > 50000 && price > 20 && price < 80 && delta >= 5;
+}
+
+function renderAlerts() {
+  var list = document.getElementById('alerts-list');
+  var filtered = alertsTab === 'hot'
+    ? alertsCache.filter(isHotAlert)
+    : alertsCache;
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">' +
+      (alertsTab === 'hot' ? 'Горячих алертов пока нет.<br>Нужны: объём >$50k, цена 20–80%, движение ≥5%' : 'Алертов пока нет') +
+      '</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(function(a) {
+    var isUp = a.delta > 0;
+    var isHot = isHotAlert(a);
+    var date = new Date(a.timestamp * 1000).toLocaleDateString('ru', {
+      day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+    });
+    var slug = a.slug || '';
+    var eventUrl = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
+    var vol = a.volume || 0;
+    var volStr = vol >= 1000000 ? '$' + (vol/1000000).toFixed(1) + 'M' : vol >= 1000 ? '$' + (vol/1000).toFixed(0) + 'K' : '$' + vol.toFixed(0);
+    return '<div class="alert-card" onclick="openLink(\'' + eventUrl + '\')" style="cursor:pointer">' +
+      '<div style="display:flex;gap:6px;margin-bottom:8px">' +
+      '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '🚀 +' : '💥 ') + Math.abs(a.delta).toFixed(1) + '%</span>' +
+      (isHot ? '<span class="mkt-tag" style="background:rgba(255,214,10,.15);color:var(--amber)">🔥 Горячий</span>' : '') +
+      '</div>' +
+      '<div class="mkt-q">' + (a.question || '').slice(0, 80) + '</div>' +
+      '<div class="mkt-meta">' +
+        '<span>Исход: <b>' + (a.outcome || '') + '</b></span>' +
+        '<span>' + a.old_price + '% → <b>' + a.new_price + '%</b></span>' +
+        '<span>Vol: ' + volStr + '</span>' +
+      '</div>' +
+      '<div class="alert-date">' + date + '</div>' +
+      '</div>';
+  }).join('');
 }
 
 // ── MARKETS ──
@@ -522,7 +574,7 @@ function switchTab(name, btn) {
   document.getElementById('s-'+name).classList.add('active');
   btn.classList.add('active');
   if (name === 'activity') renderActivity(lastActivity, false);
-  if (name === 'alerts') loadAlerts();
+  if (name === 'alerts') { if (alertsCache.length) renderAlerts(); loadAlerts(); }
   if (name === 'markets') loadMarkets();
 }
 
