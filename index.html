@@ -221,7 +221,7 @@ var T = {
     positions: 'Открытые позиции', refresh: 'Обновить',
     loading: 'Загружаю...', empty_pos: 'Нет открытых позиций', failed: 'Не удалось загрузить',
     history: 'История сделок', bought: 'Купил', sold: 'Продал',
-    load_more: t('load_more'), loading_more: 'Загружаю...',
+    load_more: 'Загрузить ещё', loading_more: 'Загружаю...',
     alerts: 'Алерты', all: 'Все', hot: '🔥 Горячие',
     no_alerts: 'Алертов пока нет.<br>Бот ещё не зафиксировал движений.',
     no_hot: t('no_hot'),
@@ -459,10 +459,10 @@ function positionHTML(p) {
   return '<div class="pos-card" onclick="openLink(\'' + url + '\')">' +
     '<span class="badge ' + (isWin ? 'badge-win' : 'badge-loss') + '">' + (isWin ? t('win_badge') : t('loss_badge')) + '</span>' +
     '<div class="pos-question">' + question.slice(0,100) + '</div>' +
-    '<div class="pos-row"><span class="lbl">Исход</span><span><b>' + outcome + '</b></span></div>' +
-    '<div class="pos-row"><span class="lbl">Цена входа</span><span>' + (avgPrice*100).toFixed(1) + '%</span></div>' +
-    '<div class="pos-row"><span class="lbl">Текущая цена</span><span><b>' + (curPrice*100).toFixed(1) + '%</b></span></div>' +
-    '<div class="pos-row"><span class="lbl">Стоимость</span><span><b>$' + value.toFixed(2) + '</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">' + t('outcome') + '</span><span><b>' + outcome + '</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">' + t('entry') + '</span><span>' + (avgPrice*100).toFixed(1) + '%</span></div>' +
+    '<div class="pos-row"><span class="lbl">' + t('cur_price') + '</span><span><b>' + (curPrice*100).toFixed(1) + '%</b></span></div>' +
+    '<div class="pos-row"><span class="lbl">' + t('value') + '</span><span><b>$' + value.toFixed(2) + '</b></span></div>' +
     '<div class="pos-row"><span class="lbl">P&L</span><span style="color:' + (isWin?'var(--green)':'var(--red)') + ';font-weight:700">' +
     (isWin?'+':'') + '$' + pnl.toFixed(2) + ' (' + (isWin?'+':'') + pnlPct.toFixed(1) + '%)</span></div>' +
     '<div class="pos-bar-track"><div class="pos-bar-fill" style="width:' + Math.min(curPrice*100,100) + '%;background:' + (isWin?'var(--green)':'var(--red)') + '"></div></div>' +
@@ -573,7 +573,7 @@ function renderAlerts() {
 
   if (!filtered.length) {
     list.innerHTML = '<div class="empty">' +
-      (alertsTab === 'hot' ? t('no_hot') : 'Алертов пока нет') +
+      (alertsTab === 'hot' ? t('no_hot') : t('no_alerts')) +
       '</div>';
     return;
   }
