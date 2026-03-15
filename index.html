@@ -506,7 +506,7 @@ function renderAlerts() {
     return '<div class="alert-card" onclick="openLink(\'' + eventUrl + '\')" style="cursor:pointer">' +
       '<div style="display:flex;gap:6px;margin-bottom:8px">' +
       '<span class="mkt-tag ' + (isUp ? 'tag-up' : 'tag-dn') + '">' + (isUp ? '🚀 +' : '💥 ') + Math.abs(a.delta).toFixed(1) + '%</span>' +
-      (isHot ? '<span class="mkt-tag" style="background:rgba(255,214,10,.15);color:var(--amber)">🔥 Горячий</span>' : '') +
+      (alertsTab === 'all' && isHot ? '<span class="mkt-tag" style="background:rgba(255,214,10,.15);color:var(--amber)">🔥 Hot</span>' : '') +
       '</div>' +
       '<div class="mkt-q">' + (a.question || '').slice(0, 80) + '</div>' +
       '<div class="mkt-meta">' +
