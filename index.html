@@ -102,10 +102,10 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
     <div class="wallet-badge" id="wallet-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
       <span class="wallet-addr" id="wallet-display">—</span>
-      <span style="font-size:11px;color:var(--hint)">сменить</span>
+      <span style="font-size:11px;color:var(--hint)"><span data-t="wallet_change">сменить</span>
     </div>
     <div class="card">
-      <div class="label">Стоимость позиций</div>
+      <div class="label" data-t="portfolio_val">Стоимость позиций</div>
       <div class="big" id="h-value">—</div>
       <div style="margin-top:8px;display:flex;gap:16px">
         <span class="hint">P&L: <b id="h-pnl">—</b></span>
@@ -113,36 +113,36 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
       </div>
     </div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="label">Открытых</div><div class="stat-val" style="color:var(--accent)" id="h-open">—</div></div>
-      <div class="stat-card"><div class="label">Завершённых</div><div class="stat-val" id="h-closed">—</div></div>
-      <div class="stat-card"><div class="label">Выигрышей</div><div class="stat-val green" id="h-wins">—</div></div>
-      <div class="stat-card"><div class="label">Проигрышей</div><div class="stat-val red" id="h-losses">—</div></div>
+      <div class="stat-card"><div class="label" data-t="open">Открытых</div><div class="stat-val" style="color:var(--accent)" id="h-open">—</div></div>
+      <div class="stat-card"><div class="label" data-t="closed">Завершённых</div><div class="stat-val" id="h-closed">—</div></div>
+      <div class="stat-card"><div class="label" data-t="wins">Выигрышей</div><div class="stat-val green" id="h-wins">—</div></div>
+      <div class="stat-card"><div class="label" data-t="losses">Проигрышей</div><div class="stat-val red" id="h-losses">—</div></div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div class="section-title" style="margin:0">Открытые позиции</div>
-      <button class="refresh-btn" onclick="loadAll()">Обновить</button>
+      <div class="section-title" style="margin:0" data-t="positions">Открытые позиции</div>
+      <button class="refresh-btn" onclick="loadAll()" data-t="refresh">Обновить</button>
     </div>
     <div id="h-positions"><div class="spinner">Загружаю...</div></div>
   </div>
 
   <div class="screen" id="s-activity">
-    <div class="section-title">История сделок</div>
+    <div class="section-title" data-t="history">История сделок</div>
     <div id="activity-list"><div class="spinner">Загружаю...</div></div>
   </div>
 
   <div class="screen" id="s-kelly">
-    <div class="section-title">Kelly Calculator</div>
+    <div class="section-title" data-t="kelly_title">Kelly Calculator</div>
     <div class="card">
       <div class="slider-row">
-        <label>Банкролл ($) <span id="k-bv">60</span></label>
+        <label data-t="bankroll">Банкролл ($) <span id="k-bv">60</span></label>
         <input type="range" id="k-bankroll" min="10" max="500" value="60" step="1">
       </div>
       <div class="slider-row">
-        <label>Твоя оценка <span id="k-mpv">60%</span></label>
+        <label data-t="my_prob">Твоя оценка <span id="k-mpv">60%</span></label>
         <input type="range" id="k-myprob" min="1" max="99" value="60" step="1">
       </div>
       <div class="slider-row" style="margin-bottom:0">
-        <label>Цена на Polymarket <span id="k-mkpv">50%</span></label>
+        <label data-t="mkt_prob">Цена на Polymarket <span id="k-mkpv">50%</span></label>
         <input type="range" id="k-mktprob" min="1" max="99" value="50" step="1">
       </div>
     </div>
@@ -150,21 +150,21 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
       Нет преимущества — Kelly говорит не ставить.
     </div>
     <div class="result-grid">
-      <div class="result-card"><div class="label">Kelly %</div><div class="rv green" id="k-pct">—</div></div>
-      <div class="result-card"><div class="label">Сумма</div><div class="rv green" id="k-usd">—</div></div>
-      <div class="result-card"><div class="label">Если выиграешь</div><div class="rv green" id="k-win">—</div></div>
-      <div class="result-card"><div class="label">Если проиграешь</div><div class="rv red" id="k-lose">—</div></div>
+      <div class="result-card"><div class="label" data-t="kelly_pct">Kelly %</div><div class="rv green" id="k-pct">—</div></div>
+      <div class="result-card"><div class="label" data-t="amount">Сумма</div><div class="rv green" id="k-usd">—</div></div>
+      <div class="result-card"><div class="label" data-t="if_win">Если выиграешь</div><div class="rv green" id="k-win">—</div></div>
+      <div class="result-card"><div class="label" data-t="if_lose">Если проиграешь</div><div class="rv red" id="k-lose">—</div></div>
     </div>
     <div style="margin-top:12px;font-size:12px;color:var(--hint);text-align:center" id="k-edge"></div>
   </div>
 
   <div class="screen" id="s-alerts">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div class="section-title" style="margin:0">Алерты</div>
-      <button class="refresh-btn" onclick="loadAlerts()">Обновить</button>
+      <div class="section-title" style="margin:0" data-t="alerts">Алерты</div>
+      <button class="refresh-btn" onclick="loadAlerts()" data-t="refresh">Обновить</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button id="tab-all" onclick="setAlertsTab('all')" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--atxt)">Все</button>
+      <button id="tab-all" onclick="setAlertsTab('all')" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--atxt)" data-t="all">Все</button>
       <button id="tab-hot" onclick="setAlertsTab('hot')" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.06);color:var(--hint)">🔥 Горячие</button>
     </div>
     <div id="alerts-list"><div class="spinner">Загружаю...</div></div>
@@ -172,8 +172,8 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
 
   <div class="screen" id="s-markets">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div class="section-title" style="margin:0">Топ рынков</div>
-      <button class="refresh-btn" onclick="loadMarkets()">Обновить</button>
+      <div class="section-title" style="margin:0" data-t="markets">Топ рынков</div>
+      <button class="refresh-btn" onclick="loadMarkets()" data-t="refresh">Обновить</button>
     </div>
     <div id="markets-list"><div class="spinner">Загружаю...</div></div>
   </div>
@@ -221,22 +221,22 @@ var T = {
     positions: 'Открытые позиции', refresh: 'Обновить',
     loading: 'Загружаю...', empty_pos: 'Нет открытых позиций', failed: 'Не удалось загрузить',
     history: 'История сделок', bought: 'Купил', sold: 'Продал',
-    load_more: 'Загрузить ещё', loading_more: 'Загружаю...',
+    load_more: t('load_more'), loading_more: 'Загружаю...',
     alerts: 'Алерты', all: 'Все', hot: '🔥 Горячие',
     no_alerts: 'Алертов пока нет.<br>Бот ещё не зафиксировал движений.',
-    no_hot: 'Горячих алертов пока нет.<br>Нужны: объём >$50k, цена 20–80%, движение ≥5%',
-    outcome: 'Исход', markets: 'Топ рынков',
+    no_hot: t('no_hot'),
+    outcome: t('outcome'), markets: 'Топ рынков',
     kelly_title: 'Kelly Calculator', bankroll: 'Банкролл ($)',
     my_prob: 'Твоя оценка', mkt_prob: 'Цена на Polymarket',
-    no_edge: 'Нет преимущества — Kelly говорит не ставить.',
+    no_edge: t('no_edge'),
     kelly_pct: 'Kelly %', amount: 'Сумма', if_win: 'Если выиграешь', if_lose: 'Если проиграешь',
     nav_portfolio: 'Портфель', nav_history: 'История', nav_kelly: 'Kelly',
     nav_alerts: 'Алерты', nav_markets: 'Рынки',
-    win_badge: '↑ В плюсе', loss_badge: '↓ В минусе',
-    entry: 'Цена входа', cur_price: 'Текущая цена', value: 'Стоимость',
+    win_badge: t('win_badge'), loss_badge: t('loss_badge'),
+    entry: t('entry'), cur_price: t('cur_price'), value: t('value'),
     up: 'Лидирует', down: 'Маловероятно', mid: 'Неопределён',
-    empty_history: 'История пустая', failed_alerts: 'Не удалось загрузить алерты',
-    failed_markets: 'Не удалось загрузить рынки',
+    empty_history: 'История пустая', failed_alerts: t('failed_alerts'),
+    failed_markets: t('failed_markets'),
   },
   en: {
     login_title: 'Polymarket Dashboard',
@@ -396,7 +396,7 @@ async function fetchMarkets() {
 
 // ── LOAD ALL ──
 async function loadAll() {
-  document.getElementById('h-positions').innerHTML = '<div class="spinner">Загружаю...</div>';
+  document.getElementById('h-positions').innerHTML = t('loading');
   try {
     var results = await Promise.all([
       fetchPositions(walletAddress),
@@ -411,7 +411,7 @@ async function loadAll() {
     renderDashboard(positions, value);
     renderActivity(activity, false);
   } catch(e) {
-    document.getElementById('h-positions').innerHTML = '<div class="empty">Не удалось загрузить</div>';
+    document.getElementById('h-positions').innerHTML = '<div class="empty">' + t('failed') + '</div>';
   }
 }
 
@@ -439,7 +439,7 @@ function renderDashboard(positions, value) {
 
   var container = document.getElementById('h-positions');
   if (!open.length) {
-    container.innerHTML = '<div class="empty">Нет открытых позиций</div>';
+    container.innerHTML = '<div class="empty">' + t('empty_pos') + '</div>';
     return;
   }
   container.innerHTML = open.map(positionHTML).join('');
@@ -457,7 +457,7 @@ function positionHTML(p) {
   var slug = p.slug || '';
   var url = slug ? 'https://polymarket.com/event/' + slug : 'https://polymarket.com';
   return '<div class="pos-card" onclick="openLink(\'' + url + '\')">' +
-    '<span class="badge ' + (isWin ? 'badge-win' : 'badge-loss') + '">' + (isWin ? '↑ В плюсе' : '↓ В минусе') + '</span>' +
+    '<span class="badge ' + (isWin ? 'badge-win' : 'badge-loss') + '">' + (isWin ? t('win_badge') : t('loss_badge')) + '</span>' +
     '<div class="pos-question">' + question.slice(0,100) + '</div>' +
     '<div class="pos-row"><span class="lbl">Исход</span><span><b>' + outcome + '</b></span></div>' +
     '<div class="pos-row"><span class="lbl">Цена входа</span><span>' + (avgPrice*100).toFixed(1) + '%</span></div>' +
@@ -473,7 +473,7 @@ function positionHTML(p) {
 function renderActivity(activity, append) {
   var list = document.getElementById('activity-list');
   if (!activity || !activity.length) {
-    if (!append) list.innerHTML = '<div class="empty">История пустая</div>';
+    if (!append) list.innerHTML = '<div class="empty">' + t('empty_history') + '</div>';
     return;
   }
   var items = activity.map(function(a) {
@@ -488,7 +488,7 @@ function renderActivity(activity, append) {
     return '<div class="activity-item" onclick="openLink(\'' + url + '\')">' +
       '<div class="act-dot" style="background:' + (isBuy?'var(--green)':'var(--red)') + '"></div>' +
       '<div class="act-info"><div class="act-q">' + title.slice(0,60) + '</div>' +
-      '<div class="act-meta">' + (isBuy?'Купил':'Продал') + ' ' + outcome + ' · ' + (price*100).toFixed(0) + '% · ' + ts + '</div></div>' +
+      '<div class="act-meta">' + (isBuy?t('bought'):t('sold')) + ' ' + outcome + ' · ' + (price*100).toFixed(0) + '% · ' + ts + '</div></div>' +
       '<div class="act-amt" style="color:' + (isBuy?'var(--green)':'var(--red)') + '">' + (isBuy?'+':'−') + '$' + amount.toFixed(2) + '</div>' +
       '</div>';
   }).join('');
@@ -510,7 +510,7 @@ function renderActivity(activity, append) {
 
 async function loadMoreActivity() {
   var btn = document.getElementById('load-more-btn');
-  if (btn) btn.textContent = 'Загружаю...';
+  if (btn) btn.textContent = t('loading_more');
   var more = await fetchActivity(walletAddress, activityOffset);
   lastActivity = lastActivity.concat(more);
   renderActivity(more, true);
@@ -543,7 +543,7 @@ async function loadAlerts() {
     var text = await r.text();
     var fresh = JSON.parse(text);
     if (!fresh || !fresh.length) {
-      if (!alertsCache.length) list.innerHTML = '<div class="empty">Алертов пока нет.<br>Бот ещё не зафиксировал движений.</div>';
+      if (!alertsCache.length) list.innerHTML = '<div class="empty">' + t('no_alerts') + '</div>';
       return;
     }
     // Добавляем только новые (по timestamp)
@@ -573,7 +573,7 @@ function renderAlerts() {
 
   if (!filtered.length) {
     list.innerHTML = '<div class="empty">' +
-      (alertsTab === 'hot' ? 'Горячих алертов пока нет.<br>Нужны: объём >$50k, цена 20–80%, движение ≥5%' : 'Алертов пока нет') +
+      (alertsTab === 'hot' ? t('no_hot') : 'Алертов пока нет') +
       '</div>';
     return;
   }
@@ -594,7 +594,7 @@ function renderAlerts() {
       '</div>' +
       '<div class="mkt-q">' + (a.question || '').slice(0, 80) + '</div>' +
       '<div class="mkt-meta">' +
-        '<span>Исход: <b>' + (a.outcome || '') + '</b></span>' +
+        '<span>' + t('outcome') + ': <b>' + (a.outcome || '') + '</b></span>' +
         '<span>' + a.old_price + '% → <b>' + a.new_price + '%</b></span>' +
         '<span>Vol: ' + volStr + '</span>' +
       '</div>' +
@@ -606,7 +606,7 @@ function renderAlerts() {
 // ── MARKETS ──
 async function loadMarkets() {
   var list = document.getElementById('markets-list');
-  list.innerHTML = '<div class="spinner">Загружаю рынки...</div>';
+  list.innerHTML = '<div class="spinner">' + t('loading') + '</div>';
   try {
     var markets = await fetchMarkets();
     list.innerHTML = markets.slice(0,15).map(function(m) {
@@ -619,7 +619,7 @@ async function loadMarkets() {
       var url = slug ? 'https://polymarket.com/event/'+slug : 'https://polymarket.com';
       var isHigh = price > 65, isLow = price < 35;
       var tagClass = isHigh ? 'tag-up' : isLow ? 'tag-dn' : 'tag-mid';
-      var tagText = isHigh ? '↑ Лидирует' : isLow ? '↓ Маловероятно' : '≈ Неопределён';
+      var tagText = isHigh ? t('up') : isLow ? t('down') : t('mid');
       return '<div class="mkt-card" onclick="openLink(\'' + url + '\')">' +
         '<span class="mkt-tag ' + tagClass + '">' + tagText + '</span>' +
         '<div class="mkt-q">' + (m.question||'N/A').slice(0,80) + '</div>' +
