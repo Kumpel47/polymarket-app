@@ -293,14 +293,27 @@ async function fetchActivity(address, offset) {
 
 async function fetchBalance(address) {
   try {
-    // Polymarket balance endpoint
-    var data = await apiFetch('https://data-api.polymarket.com/balance?user=' + address.toLowerCase());
-    if (data && data.balance !== undefined) return parseFloat(data.balance);
-    if (data && data.usdc !== undefined) return parseFloat(data.usdc);
-    // Fallback: try value endpoint which may include cash
-    var val = await apiFetch('https://data-api.polymarket.com/value?user=' + address.toLowerCase());
-    if (val && val.cashBalance !== undefined) return parseFloat(val.cashBalance);
-    if (val && val.balance !== undefined) return parseFloat(val.balance);
+    // USDC contract on Polygon: 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174
+    // balanceOf(address) = keccak256 first 4 bytes + padded address
+    var usdcContract = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+    var paddedAddr = '000000000000000000000000' + address.toLowerCase().replace('0x','');
+    var data = '0x70a08231' + paddedAddr;
+    var body = JSON.stringify({
+      jsonrpc: '2.0', method: 'eth_call',
+      params: [{ to: usdcContract, data: data }, 'latest'],
+      id: 1
+    });
+    var r = await fetch('https://polygon-rpc.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body
+    });
+    var json = await r.json();
+    if (json.result && json.result !== '0x') {
+      // USDC has 6 decimals on Polygon
+      var raw = parseInt(json.result, 16);
+      return raw / 1e6;
+    }
   } catch(e) {}
   return null;
 }
