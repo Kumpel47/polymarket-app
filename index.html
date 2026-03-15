@@ -8,7 +8,7 @@
 <style>
 :root{--bg:var(--tg-theme-bg-color,#111);--bg2:var(--tg-theme-secondary-bg-color,#1e1e1e);--text:var(--tg-theme-text-color,#fff);--hint:var(--tg-theme-hint-color,#888);--accent:var(--tg-theme-button-color,#3390ec);--atxt:var(--tg-theme-button-text-color,#fff);--green:#30d158;--red:#ff453a;--amber:#ffd60a;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:72px;overscroll-behavior:none}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:90px;overscroll-behavior:none}
 #login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:24px;text-align:center}
 .login-icon{font-size:56px;margin-bottom:20px}
 .login-title{font-size:22px;font-weight:700;margin-bottom:8px}
@@ -19,8 +19,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn:active{opacity:.8}
 .btn.secondary{background:rgba(255,255,255,.06);color:var(--text);margin-top:8px}
 .login-hint{font-size:12px;color:var(--hint);margin-top:16px;line-height:1.5}
-.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:0.5px solid rgba(255,255,255,.08);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;cursor:pointer;color:var(--hint);font-size:10px;font-weight:500;border:none;background:none}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:0.5px solid rgba(255,255,255,.08);display:flex;z-index:100;padding-bottom:max(env(safe-area-inset-bottom),12px)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 0;cursor:pointer;color:var(--hint);font-size:10px;font-weight:500;border:none;background:none}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .screen{display:none;padding:16px;animation:fadeIn .15s ease}
@@ -414,16 +414,21 @@ function renderActivity(activity, append) {
   }
 
   if (activity.length === 30) {
-    activityOffset += 30;
     list.insertAdjacentHTML('beforeend', '<button id="load-more-btn" class="btn secondary" style="margin-top:8px" onclick="loadMoreActivity()">Load more</button>');
   }
 }
 
 async function loadMoreActivity() {
   var btn = document.getElementById('load-more-btn');
-  if (btn) btn.textContent = 'Loading...';
-  var more = await fetchActivity(walletAddress, activityOffset);
+  if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
+  var offset = activityOffset;
+  var more = await fetchActivity(walletAddress, offset);
+  if (!more || !more.length) {
+    if (btn) btn.remove();
+    return;
+  }
   lastActivity = lastActivity.concat(more);
+  activityOffset = offset + 30;
   renderActivity(more, true);
 }
 
