@@ -103,9 +103,10 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
     <div class="card">
       <div class="label">Portfolio value</div>
       <div class="big" id="h-value">—</div>
-      <div style="margin-top:8px;display:flex;gap:16px">
+      <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
         <span class="hint">P&L: <b id="h-pnl">—</b></span>
         <span class="hint">Positions: <b id="h-count">—</b></span>
+        <span class="hint">Balance: <b id="h-balance" style="color:var(--amber)">—</b></span>
       </div>
     </div>
     <div class="stat-grid">
@@ -290,6 +291,20 @@ async function fetchActivity(address, offset) {
   return [];
 }
 
+async function fetchBalance(address) {
+  try {
+    // Polymarket balance endpoint
+    var data = await apiFetch('https://data-api.polymarket.com/balance?user=' + address.toLowerCase());
+    if (data && data.balance !== undefined) return parseFloat(data.balance);
+    if (data && data.usdc !== undefined) return parseFloat(data.usdc);
+    // Fallback: try value endpoint which may include cash
+    var val = await apiFetch('https://data-api.polymarket.com/value?user=' + address.toLowerCase());
+    if (val && val.cashBalance !== undefined) return parseFloat(val.cashBalance);
+    if (val && val.balance !== undefined) return parseFloat(val.balance);
+  } catch(e) {}
+  return null;
+}
+
 async function fetchValue(address) {
   try {
     return await apiFetch('https://data-api.polymarket.com/value?user=' + address);
@@ -312,14 +327,16 @@ async function loadAll() {
     var results = await Promise.all([
       fetchPositions(walletAddress),
       fetchActivity(walletAddress, 0),
-      fetchValue(walletAddress)
+      fetchValue(walletAddress),
+      fetchBalance(walletAddress)
     ]);
     var positions = results[0];
     var activity = results[1];
     var value = results[2];
+    var balance = results[3];
     lastActivity = activity;
     activityOffset = 0;
-    renderDashboard(positions, value);
+    renderDashboard(positions, value, balance);
     renderActivity(activity, false);
   } catch(e) {
     document.getElementById('h-positions').innerHTML = '<div class="empty">' + 'Failed to load' + '</div>';
@@ -327,7 +344,7 @@ async function loadAll() {
 }
 
 // ── DASHBOARD ──
-function renderDashboard(positions, value) {
+function renderDashboard(positions, value, balance) {
   var open = positions.filter(function(p) { return !p.isClosed; });
   var closed = positions.filter(function(p) { return p.isClosed; });
   var wins = closed.filter(function(p) { return parseFloat(p.cashPnl) > 0; });
@@ -343,6 +360,12 @@ function renderDashboard(positions, value) {
   pnlEl.textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
   pnlEl.style.color = totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
   document.getElementById('h-count').textContent = positions.length;
+  var balEl = document.getElementById('h-balance');
+  if (balance !== null && balance !== undefined) {
+    balEl.textContent = '$' + balance.toFixed(2) + ' USDC';
+  } else {
+    balEl.textContent = 'N/A';
+  }
   document.getElementById('h-open').textContent = open.length;
   document.getElementById('h-closed').textContent = closed.length;
   document.getElementById('h-wins').textContent = wins.length;
