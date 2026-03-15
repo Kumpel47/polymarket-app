@@ -75,18 +75,25 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
 .wallet-addr{font-family:monospace;font-size:12px;color:var(--hint);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .refresh-btn{background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-weight:500}
 .debug{color:var(--red);font-size:12px;margin-bottom:8px;word-break:break-all;min-height:16px}
+.lang-toggle{display:flex;gap:6px;margin-bottom:24px}
+.lang-btn{padding:6px 16px;border-radius:8px;border:0.5px solid rgba(255,255,255,.15);background:none;color:var(--hint);font-size:13px;font-weight:600;cursor:pointer}
+.lang-btn.active{background:var(--accent);color:var(--atxt);border-color:var(--accent)}
 </style>
 </head>
 <body>
 
 <div id="login-screen">
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-ru" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
   <div class="login-icon">📊</div>
-  <div class="login-title">Polymarket Dashboard</div>
-  <div class="login-sub">Введи адрес кошелька (0x...)<br>чтобы увидеть позиции и P&L</div>
+  <div class="login-title" id="login-title">Polymarket Dashboard</div>
+  <div class="login-sub" id="login-sub">Введи адрес кошелька (0x...)<br>чтобы увидеть позиции и P&L</div>
   <input class="wallet-input" id="wallet-input" placeholder="0x3a597F87..." autocomplete="off" spellcheck="false">
   <div class="debug" id="debug-msg"></div>
   <button class="btn" id="login-btn">Войти</button>
-  <div class="login-hint">Read-only. Приватный ключ не нужен.</div>
+  <div class="login-hint" id="login-hint-txt">Read-only. Приватный ключ не нужен.</div>
 </div>
 
 <div id="app" style="display:none">
@@ -174,23 +181,23 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
   <nav class="nav">
     <button class="nav-btn active" onclick="switchTab('home',this)">
       <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
-      Портфель
+      <span data-t="nav_portfolio">Портфель</span>
     </button>
     <button class="nav-btn" onclick="switchTab('activity',this)">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      История
+      <span data-t="nav_history">История</span>
     </button>
     <button class="nav-btn" onclick="switchTab('kelly',this)">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
-      Kelly
+      <span data-t="nav_kelly">Kelly</span>
     </button>
     <button class="nav-btn" onclick="switchTab('alerts',this)">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      Алерты
+      <span data-t="nav_alerts">Алерты</span>
     </button>
     <button class="nav-btn" onclick="switchTab('markets',this)">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Рынки
+      <span data-t="nav_markets">Рынки</span>
     </button>
   </nav>
 </div>
@@ -198,6 +205,89 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
 <script>
 var tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
+
+// ── i18n ──
+var lang = localStorage.getItem('pm_lang') || 'ru';
+var T = {
+  ru: {
+    login_title: 'Polymarket Dashboard',
+    login_sub: 'Введи адрес кошелька (0x...)<br>чтобы увидеть позиции и P&L',
+    login_btn: 'Войти',
+    login_hint: 'Read-only. Приватный ключ не нужен.',
+    login_err: 'Неверный адрес. Должен начинаться с 0x и содержать 42 символа. Длина: ',
+    wallet_change: 'сменить',
+    portfolio_val: 'Стоимость позиций',
+    open: 'Открытых', closed: 'Завершённых', wins: 'Выигрышей', losses: 'Проигрышей',
+    positions: 'Открытые позиции', refresh: 'Обновить',
+    loading: 'Загружаю...', empty_pos: 'Нет открытых позиций', failed: 'Не удалось загрузить',
+    history: 'История сделок', bought: 'Купил', sold: 'Продал',
+    load_more: 'Загрузить ещё', loading_more: 'Загружаю...',
+    alerts: 'Алерты', all: 'Все', hot: '🔥 Горячие',
+    no_alerts: 'Алертов пока нет.<br>Бот ещё не зафиксировал движений.',
+    no_hot: 'Горячих алертов пока нет.<br>Нужны: объём >$50k, цена 20–80%, движение ≥5%',
+    outcome: 'Исход', markets: 'Топ рынков',
+    kelly_title: 'Kelly Calculator', bankroll: 'Банкролл ($)',
+    my_prob: 'Твоя оценка', mkt_prob: 'Цена на Polymarket',
+    no_edge: 'Нет преимущества — Kelly говорит не ставить.',
+    kelly_pct: 'Kelly %', amount: 'Сумма', if_win: 'Если выиграешь', if_lose: 'Если проиграешь',
+    nav_portfolio: 'Портфель', nav_history: 'История', nav_kelly: 'Kelly',
+    nav_alerts: 'Алерты', nav_markets: 'Рынки',
+    win_badge: '↑ В плюсе', loss_badge: '↓ В минусе',
+    entry: 'Цена входа', cur_price: 'Текущая цена', value: 'Стоимость',
+    up: 'Лидирует', down: 'Маловероятно', mid: 'Неопределён',
+    empty_history: 'История пустая', failed_alerts: 'Не удалось загрузить алерты',
+    failed_markets: 'Не удалось загрузить рынки',
+  },
+  en: {
+    login_title: 'Polymarket Dashboard',
+    login_sub: 'Enter your wallet address (0x...)<br>to see your positions and P&L',
+    login_btn: 'Connect',
+    login_hint: 'Read-only. No private key needed.',
+    login_err: 'Invalid address. Must start with 0x and be 42 characters. Length: ',
+    wallet_change: 'change',
+    portfolio_val: 'Portfolio value',
+    open: 'Open', closed: 'Closed', wins: 'Wins', losses: 'Losses',
+    positions: 'Open positions', refresh: 'Refresh',
+    loading: 'Loading...', empty_pos: 'No open positions', failed: 'Failed to load',
+    history: 'Trade history', bought: 'Bought', sold: 'Sold',
+    load_more: 'Load more', loading_more: 'Loading...',
+    alerts: 'Alerts', all: 'All', hot: '🔥 Hot',
+    no_alerts: 'No alerts yet.<br>Bot hasn\'t detected any movements.',
+    no_hot: 'No hot alerts yet.<br>Need: volume >$50k, price 20–80%, move ≥5%',
+    outcome: 'Outcome', markets: 'Top markets',
+    kelly_title: 'Kelly Calculator', bankroll: 'Bankroll ($)',
+    my_prob: 'Your probability', mkt_prob: 'Polymarket price',
+    no_edge: 'No edge — Kelly says don\'t bet.',
+    kelly_pct: 'Kelly %', amount: 'Amount', if_win: 'If you win', if_lose: 'If you lose',
+    nav_portfolio: 'Portfolio', nav_history: 'History', nav_kelly: 'Kelly',
+    nav_alerts: 'Alerts', nav_markets: 'Markets',
+    win_badge: '↑ Winning', loss_badge: '↓ Losing',
+    entry: 'Entry price', cur_price: 'Current price', value: 'Value',
+    up: 'Favorite', down: 'Unlikely', mid: 'Uncertain',
+    empty_history: 'No history yet', failed_alerts: 'Failed to load alerts',
+    failed_markets: 'Failed to load markets',
+  }
+};
+
+function t(key) { return T[lang][key] || T['ru'][key] || key; }
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('pm_lang', l);
+  document.getElementById('btn-ru').classList.toggle('active', l === 'ru');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  applyLang();
+}
+
+function applyLang() {
+  document.getElementById('login-title').innerHTML = t('login_title');
+  document.getElementById('login-sub').innerHTML = t('login_sub');
+  document.getElementById('login-btn').textContent = t('login_btn');
+  document.getElementById('login-hint-txt').textContent = t('login_hint');
+  document.querySelectorAll('[data-t]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-t'));
+  });
+}
 
 var PROXY = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
 var BOT_TOKEN = '';  // вставь токен бота
@@ -213,7 +303,7 @@ document.getElementById('login-btn').addEventListener('click', function() {
   var dbg = document.getElementById('debug-msg');
   dbg.textContent = 'Длина: ' + val.length;
   if (!val.startsWith('0x') || val.length !== 42) {
-    dbg.textContent = 'Неверный адрес. Должен начинаться с 0x и содержать 42 символа. Длина: ' + val.length;
+    dbg.textContent = t('login_err') + val.length;
     document.getElementById('wallet-input').style.borderColor = 'var(--red)';
     return;
   }
@@ -249,6 +339,11 @@ function showApp() {
 
 // Auto login
 window.addEventListener('DOMContentLoaded', function() {
+  // Apply saved language
+  document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  applyLang();
+
   var saved = localStorage.getItem(STORAGE_KEY);
   if (saved && saved.startsWith('0x') && saved.length === 42) {
     walletAddress = saved;
