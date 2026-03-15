@@ -98,7 +98,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
     <div class="wallet-badge" id="wallet-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
       <span class="wallet-addr" id="wallet-display">—</span>
-      <span style="font-size:11px;color:var(--hint)"><span>change</span>
+      <span style="font-size:11px;color:var(--hint)">change</span>
     </div>
     <div class="card">
       <div class="label">Portfolio value</div>
@@ -123,7 +123,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;b
   </div>
 
   <div class="screen" id="s-activity">
-    <div class="section-title">History сделок</div>
+    <div class="section-title">Trade history</div>
     <div id="activity-list"><div class="spinner">Loading...</div></div>
   </div>
 
@@ -205,8 +205,7 @@ if (tg) { tg.ready(); tg.expand(); }
 
 
 var PROXY = 'https://polymarket-proxy.matviidavydenko.workers.dev/?url=';
-var BOT_TOKEN = '';  // вставь токен бота
-var CHANNEL_ID = '-1003756982610';
+
 var STORAGE_KEY = 'pm_wallet_v3';
 var walletAddress = '';
 var lastActivity = [];
@@ -216,7 +215,7 @@ var activityOffset = 0;
 document.getElementById('login-btn').addEventListener('click', function() {
   var val = document.getElementById('wallet-input').value.trim();
   var dbg = document.getElementById('debug-msg');
-  dbg.textContent = 'Длина: ' + val.length;
+  dbg.textContent = '';
   if (!val.startsWith('0x') || val.length !== 42) {
     dbg.textContent = 'Invalid address. Must start with 0x and be 42 characters. Length: ' + val.length;
     document.getElementById('wallet-input').style.borderColor = 'var(--red)';
@@ -293,22 +292,15 @@ async function fetchActivity(address, offset) {
 
 async function fetchBalance(address) {
   try {
-    var usdcContract = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-    var paddedAddr = '000000000000000000000000' + address.toLowerCase().replace('0x','');
-    var data = '0x70a08231' + paddedAddr;
-    var payload = JSON.stringify({
-      jsonrpc: '2.0', method: 'eth_call',
-      params: [{ to: usdcContract, data: data }, 'latest'],
-      id: 1
-    });
-    var r = await fetch('https://polymarket-proxy.matviidavydenko.workers.dev/rpc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: payload
-    });
+    var apiKey = 'P6D7GVC18XQN3N9XGIWE1MARI7VQW2WNKV';
+    var url = 'https://api.polygonscan.com/api?module=account&action=tokenbalance' +
+      '&contractaddress=0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' +
+      '&address=' + address.toLowerCase() +
+      '&tag=latest&apikey=' + apiKey;
+    var r = await fetch(url);
     var json = await r.json();
-    if (json.result && json.result !== '0x') {
-      return parseInt(json.result, 16) / 1e6;
+    if (json.status === '1' && json.result) {
+      return parseInt(json.result) / 1e6;
     }
   } catch(e) {}
   return null;
@@ -494,7 +486,7 @@ async function loadAlerts() {
       if (!alertsCache.length) list.innerHTML = '<div class="empty">' + 'No alerts yet' + '</div>';
       return;
     }
-    // Добавляем только новые (по timestamp)
+    // Add only new alerts by timestamp
     var lastTs = alertsCache.length ? alertsCache[0].timestamp : 0;
     var newAlerts = fresh.filter(function(a) { return a.timestamp > lastTs; });
     if (newAlerts.length) {
@@ -576,7 +568,7 @@ async function loadMarkets() {
         '</div>';
     }).join('');
   } catch(e) {
-    list.innerHTML = '<div class="empty">Failed to load рынки</div>';
+    list.innerHTML = '<div class="empty">Failed to load markets</div>';
   }
 }
 
